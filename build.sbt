@@ -2,12 +2,15 @@ val scala3Version = "3.7.3"
 
 lazy val root = project
   .in(file("."))
+  .enablePlugins(PlayScala)
   .settings(
     name := "backgammon-web",
     version := "0.1.0-SNAPSHOT",
 
     scalaVersion := scala3Version,
-
-    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0" % Test,
-    libraryDependencies += "backgammon" %% "backgammon" % "0.1.0-SNAPSHOT"
+    libraryDependencies ++= Seq(
+      guice,
+      "backgammon"              %% "backgammon"         % "0.1.0-SNAPSHOT",
+      "org.scalatestplus.play"  %% "scalatestplus-play" % "7.0.2" % Test
+    )
   )
