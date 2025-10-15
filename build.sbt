@@ -1,4 +1,4 @@
-val scala3Version = "3.7.3"
+val scala3Version     = "3.7.3"
 
 lazy val root = project
   .in(file("."))
@@ -11,6 +11,7 @@ lazy val root = project
     libraryDependencies ++= Seq(
       guice,
       "backgammon"              %% "backgammon"         % "0.1.0-SNAPSHOT",
-      "org.scalatestplus.play"  %% "scalatestplus-play" % "7.0.2" % Test
+      "org.scalatestplus.play"  %% "scalatestplus-play" % "7.0.2" % Test,
+      "org.apache.commons" % "commons-text" % "1.12.0"
     )
   )

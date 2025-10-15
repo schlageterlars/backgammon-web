@@ -1,5 +1,45 @@
-@()
+@(myForm: Form[String])(implicit request: MessagesRequestHeader)
+@import helper._
+@import views.html.helper.Implicits._
 
 @main("Welcome to Play") {
   <h1>Welcome to Play!</h1>
+  @form(action = routes.HomeController.submitForm, "id" -> "tuiForm") {
+    @CSRF.formField
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      @inputText(myForm("command"), "_label" -> "")
+      <input type="submit" value="Submit" class="tui-button">
+    </div>
+  }
+
+  <pre id="log" style="height: 280px; overflow:auto; border:1px solid #ccc; padding:8px;"></pre>
+
+  <script>
+    // Live stream
+    const es = new EventSource("@routes.HomeController.tuiStream.url");
+    es.onmessage = (e) => {
+      const pre = document.getElementById("log");
+      if (e.data === "<clear/>") {
+        pre.innerHTML = ""; // clear screen
+        return;
+      }
+
+      pre.innerHTML += e.data + "<br>";
+      pre.scrollTop = pre.scrollHeight;
+    };
+
+    // Submit without reload
+    const form = document.getElementById("tuiForm");
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(form);
+      const csrf = form.querySelector('input[name="csrfToken"]')?.value;
+      await fetch(form.action, {
+        method: "POST",
+        body: fd,
+        headers: csrf ? { "Csrf-Token": csrf } : {}
+      });
+      form.reset();
+    });
+  </script>
 }
