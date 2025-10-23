@@ -50,6 +50,10 @@ class HomeController @Inject()(cc: MessagesControllerComponents, val gameControl
     Ok(views.html.index(myForm))
   }
 
+  def rules = Action { implicit request: MessagesRequest[AnyContent] =>
+    Ok(views.html.rules())
+  }
+
   def submitForm = Action { implicit request: MessagesRequest[AnyContent] =>
     myForm.bindFromRequest().fold(
       formWithErrors => BadRequest(views.html.index(formWithErrors)),

@@ -5,6 +5,7 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
+GET     /rules                      controllers.HomeController.rules()
 POST    /submit                     controllers.HomeController.submitForm
 GET     /tui/stream                 controllers.HomeController.tuiStream
 
