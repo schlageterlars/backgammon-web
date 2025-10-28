@@ -1,53 +1,31 @@
-@(myForm: Form[String])(implicit request: MessagesRequestHeader)
-@import helper._
-@import views.html.helper.Implicits._
-
+@import de.htwg.se.backgammon.model.Player
+@(gameController: de.htwg.se.backgammon.controller.IController)
 @main("Backgammon") {
-  <h1 style="text-align: center;">Backgammon</h1>
-  @form(action = routes.HomeController.submitForm, "id" -> "tuiForm", "class" -> "tui-form") {
-    @CSRF.formField
-    <div style="display: flex; align-items: center; gap: 0.5rem;">
-      @inputText(myForm("command"), "_label" -> "", "class" -> "tui-input")
-      <input type="submit" value="Send" class="tui-button">
-    </div>
-  }
-
-  <pre id="log" class="tui-log"></pre>
-
-  <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("tuiForm");
-      if (form) {
-        form.submit(); // automatically submit the form
+  1
+  <h1>Backgammon - @gameController.currentPlayer it's your turn!</h1>
+  <pr>Dice: @gameController.dice.mkString(", ")</pr>
+  <table class="board">
+    <tr>
+      @for((field, index) <- gameController.game.fields.zipWithIndex) {
+        <th>@(index + 1)</th>
       }
-    });
-
-
-    // Live stream
-    const es = new EventSource("@routes.HomeController.tuiStream.url");
-    es.onmessage = (e) => {
-      const pre = document.getElementById("log");
-      if (e.data === "<clear/>") {
-        pre.innerHTML = ""; // clear screen
-        return;
+    </tr>
+    <tr>
+      @for(field <- gameController.game.fields) {
+        <td>
+          @if(field.isEmpty()) {
+            <span class="empty">-</span>
+          } else if(field.isOccupiedBy(Player.Black)) {
+            <span class="black">B (@field.number)</span>
+          } else {
+            <span class="white">W (@field.number)</span>
+          }
+        </td>
       }
+    </tr>
+  </table>
 
-      pre.innerHTML += e.data + "<br>";
-      pre.scrollTop = pre.scrollHeight;
-    };
-
-    // Submit without reload
-    const form = document.getElementById("tuiForm");
-    form.addEventListener("submit", async (ev) => {
-      ev.preventDefault();
-      const fd = new FormData(form);
-      const csrf = form.querySelector('input[name="csrfToken"]')?.value;
-      await fetch(form.action, {
-        method: "POST",
-        body: fd,
-        headers: csrf ? { "Csrf-Token": csrf } : {}
-      });
-      form.reset();
-    });
-  </script>
+  <form action="@routes.HomeController.undo()" method="get" style="text-align: center;">
+    <button type="submit">Undo last move</button>
+  </form>
 }
