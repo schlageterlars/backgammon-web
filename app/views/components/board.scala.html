@@ -51,14 +51,12 @@
         </div>
       }
     }
-
-    <div class="bearoff bearoff-top" aria-label="Bear-off oben"></div>
   </div>
 
   <!-- MITTELLEISTE (optisch + Bar-Label) -->
   <div class="middle">
+    <div class="bearoff-spacer"></div>
     <div class="gutter"></div>
-    <div class="bar-area"><div class="bar-strip"><span>BAR</span></div></div>
     <div class="bearoff-spacer"></div>
   </div>
 
@@ -71,7 +69,7 @@
         <div class="point-cell bottom" data-point="@p">
           <span class="point-label">@p</span>
           @if(field.isEmpty()) {
-            <span class="checker-stack empty">–</span>
+            <span class="checker-stack empty"></span>
           } else if(field.isOccupiedBy(Player.Black)) {
             <span class="checker-stack black">
               <span class="pip"></span><span class="count">(@field.number)</span>
@@ -105,8 +103,6 @@
         </div>
       }
     }
-
-    <div class="bearoff bearoff-bottom" aria-label="Bear-off unten"></div>
   </div>
 
 </section>
