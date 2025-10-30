@@ -5,8 +5,8 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
-GET     /undo                       controllers.HomeController.undo()
-
+GET     /rules                      controllers.HomeController.rules()
+GET     /undo                       controllers.HomeController.undo()      
 
 
 # Map static resources from the /public folder to the /assets URL path
