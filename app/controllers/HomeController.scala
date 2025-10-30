@@ -34,4 +34,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     gameController.undoAndPublish(gameController.undo)
     Redirect(routes.HomeController.index())
   }
+
+  def rules = Action {
+    Ok(views.html.rules())
+  }
+
+
 }
