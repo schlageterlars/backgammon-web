@@ -1,31 +1,18 @@
-/* =========================
-   Variablen / Farben
-   ========================= */
-
-@bg-page: #0f172a;        // Hintergrund Seite
-@panel:   #111827;        // Brett / Karten
-@border:  #1f2937;        // Linien, Ränder
-@text:    #e5e7eb;        // Standardtext (hell)
-@muted:   #9ca3af;        // dezenter Text
-@accentA: #2dd4bf;        // helles Grünblau (Dreieck A)
-@accentB: #60a5fa;        // Blau (Dreieck B)
-@ok:      #22c55e;        // grün
-@bad:     #ef4444;        // rot
-
+@bg-page: #0f172a;
+@panel: #111827;
+@border: #1f2937;
+@text: #e5e7eb;
+@muted: #9ca3af;
+@accentA: #2dd4bf;
+@accentB: #60a5fa;
+@ok: #22c55e;
+@bad: #ef4444;
 @radius-lg: 14px;
 @radius-sm: 8px;
-
-@pointHeight: 100px;
-@triangleHeight: 82px;
-
+@pointHeight: 200px;
 @gutterW: 12px;
-@barW:    28px;
-@bearW:   32px;
-
-
-/* =========================
-   Grundlayout Seite
-   ========================= */
+@barW: 14px;
+@bearW: 32px;
 
 body {
   margin: 0;
@@ -39,33 +26,23 @@ body {
 
 #game {
   max-width: 1200px;
-  margin: 24px auto 60px auto;
-  padding: 0 16px 32px 16px;
-  color: @text;
+  margin: 24px auto 60px;
+  padding: 0 16px 32px;
 }
 
 .title {
-  margin: 0 0 16px 0;
+  margin: 0 0 16px;
   font-size: 2rem;
-  line-height: 1.2;
-  font-weight: 600;
-  color: @text;
-}
-
-#current-player {
-  color: @accentB;
   font-weight: 600;
 }
 
-#game-header {
-  margin-bottom: 24px;
-}
+#current-player { color: @accentB; font-weight: 600; }
+#game-header { margin-bottom: 24px; }
 
 #status-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  color: @text;
 }
 
 .status-block {
@@ -75,137 +52,77 @@ body {
   padding: 12px 16px;
   font-size: 0.9rem;
   min-width: 160px;
-  color: @text;
   box-shadow: 0 8px 24px fade(#000,60%);
 }
 
-.label {
-  font-weight: 600;
-  color: @text;
-  display: block;
-  margin-bottom: 4px;
-  font-size: 0.85rem;
-}
+.label { font-weight: 600; margin-bottom: 4px; font-size: 0.85rem; }
+.dice-list { padding-left: 20px; margin: 0; }
+.dice-list .die { list-style: disc; line-height: 1.5; }
 
-.dice-list {
-  padding-left: 20px;
-  margin: 0;
-  color: @text;
-}
-.dice-list .die {
-  list-style: disc;
-  line-height: 1.5;
-  color: @text;
-}
+#board-area { margin-bottom: 24px; }
 
-/* =========================
-   Board Wrapper Bereich
-   ========================= */
-
-#board-area {
-  margin-bottom: 24px;
-}
-
-/* Das gesamte Brett */
-#bg-board,
-.bg-board {
+#bg-board, .bg-board {
   background: @panel;
   border: 1px solid @border;
   border-radius: @radius-lg;
   padding: 16px;
   display: grid;
   gap: 12px;
-  color: @text;
   box-shadow: 0 16px 40px fade(#000,70%);
 }
 
-/* Drei "Zeilen": obere Punkte, Mittelsteg mit BAR, untere Punkte */
-.row,
-.middle {
+.row, .middle {
   display: grid;
-  grid-template-columns:
-    @gutterW           /* linker Rand (leer)   -> 1 Spalte  */
-    repeat(6, 1fr)     /* 6 Punkteblock links  -> 6 Spalten */
-    @barW              /* Bar                   -> 1 Spalte  */
-    repeat(6, 1fr)     /* 6 Punkteblock rechts -> 6 Spalten */
-    @bearW;            /* Bearoff rechts        -> 1 Spalte  */
+  grid-template-columns: @gutterW repeat(6,1fr) @barW repeat(6,1fr) @bearW;
   gap: 8px;
   align-items: stretch;
-  color: @text;
 }
 
-/* Höhe obere/untere Reihen */
-.row-top,
-.row-bottom {
-  height: @pointHeight;
-}
+.row-top, .row-bottom { height: @pointHeight; }
+.row-top { margin-bottom: 8px; }
+.row-bottom { margin-top: 8px; }
 
-/* ein bisschen Abstand zur Mittelreihe,
-   damit sie als "Steg" sichtbar wird */
-.row-top {
-  margin-bottom: 8px;
-}
-.row-bottom {
-  margin-top: 8px;
-}
-
-/* Mittelreihe (die Zeile mit BAR) */
 .middle {
-  height: 44px;
-  margin-top: 4px;
-  margin-bottom: 4px;
-  background: rgba(0,0,0,0.15);
+  height: @barW;
+  margin: 4px 0;
+  background: @accentA;
   border-radius: @radius-sm;
   box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
-  color: @text;
   font-weight: 600;
   font-size: .8rem;
 }
 
-/* Positionierung der Elemente in der Mittelreihe */
-.gutter {
-  border-radius: @radius-sm;
-}
+.spacer-left { grid-column: 2/8; }
+.bar-area { grid-column: 8/9; display: grid; place-items: center; }
+.spacer-right { grid-column: 9/15; }
+.bearoff-spacer { grid-column: 15/16; }
 
-.spacer-left  { grid-column: 2 / 8; }
-.bar-area     { grid-column: 8 / 9; display: grid; place-items: center; }
-.spacer-right { grid-column: 9 / 15; }
-.bearoff-spacer { grid-column: 15 / 16; }
-
-/* Das "BAR"-Feld */
 .bar-strip {
   min-width: 70px;
   min-height: 44px;
   border-radius: @radius-sm;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      fade(#fff,15%) 0 6px,
-      transparent 6px 12px
-    );
-  background-color: fade(#fff, 3%);
-  border: 1px dashed fade(#fff, 35%);
+  background: repeating-linear-gradient(90deg, fade(#fff,15%) 0 6px, transparent 6px 12px);
+  background-color: fade(#fff,3%);
+  border: 1px dashed fade(#fff,35%);
   color: #fff;
   font-size: 0.9rem;
-  letter-spacing: 0.08em;
+  letter-spacing: .08em;
   text-shadow: 0 2px 4px rgba(0,0,0,.9);
   display: grid;
   place-items: center;
   box-shadow: 0 8px 24px fade(#000,80%);
 }
 
-/* Die Bar-Spalte in den Reihen (da wo geschlagene Steine liegen würden) */
 .bar {
-  background: #0f172a;
+  background: @accentA;
   border: 1px solid fade(@border, 60%);
   border-radius: @radius-sm;
   box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
 }
 
-/* Bearoff (rechte schmale Spalte) */
 .bearoff {
   background: radial-gradient(circle at 50% 30%, fade(#fff,4%) 0%, fade(#000,0%) 70%);
-  border: 1px solid fade(@border, 55%);
+  border: 1px solid fade(@border,55%);
   border-radius: @radius-sm;
   color: @muted;
   font-size: .7rem;
@@ -217,10 +134,6 @@ body {
   box-shadow: inset 0 0 8px rgba(0,0,0,0.7);
 }
 
-/* =========================
-   Einzelne Punkte (Felder)
-   ========================= */
-
 .point-cell {
   position: relative;
   background: #0f172a;
@@ -229,190 +142,85 @@ body {
   display: grid;
   place-items: center;
   cursor: pointer;
-  color: @text;
   transition: box-shadow .15s ease;
-  box-shadow:
-    inset 0 0 8px rgba(0,0,0,0.8),
-    0 8px 24px fade(#000,80%);
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.8), 0 8px 24px fade(#000,80%);
 }
 .point-cell:hover {
-  box-shadow:
-    0 0 0 2px fade(@accentB, 50%),
-    0 8px 24px fade(#000,80%);
+  box-shadow: 0 0 0 2px fade(@accentB,50%), 0 8px 24px fade(#000,80%);
 }
 
-/* Nummer (1..24) oben links im Feld */
 .point-label {
   position: absolute;
-  top: 6px;
-  left: 8px;
+  top: 6px; left: 8px;
   font-size: .8rem;
   color: @muted;
-  font-weight: 500;
   text-shadow: 0 1px 2px rgba(0,0,0,.9);
   user-select: none;
 }
 
-/* Dreiecke, zeigen zur Brettmitte */
-.point-cell.top::before,
-.point-cell.bottom::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  opacity: .9;
-  margin: 0 auto;
-}
-
-.point-cell.top::before {
-  bottom: 0;
-  border-left:  50% solid transparent;
-  border-right: 50% solid transparent;
-  border-top:   @triangleHeight solid @accentA;
-}
-.point-cell.bottom::before {
-  top: 0;
-  border-left:  50% solid transparent;
-  border-right: 50% solid transparent;
-  border-bottom:@triangleHeight solid @accentA;
-}
-
-/* abwechselnde Farbe pro Feld */
-.point-cell.top:nth-child(even)::before    { border-top-color:    @accentB; }
-.point-cell.bottom:nth-child(even)::before { border-bottom-color: @accentB; }
-
-/* =========================
-   Checker / Steine
-   ========================= */
-
 .checker-stack {
   position: relative;
   z-index: 1;
-
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
   padding: 6px 10px;
   min-height: 32px;
-
   font-size: 0.9rem;
-  color: @text;
 }
-
-.checker-stack.empty {
-  color: @muted;
-}
+.checker-stack.empty { color: @muted; }
 
 .pip {
-  width: 22px;
-  height: 22px;
+  width: 22px; height: 22px;
   border-radius: 999px;
-  display: grid;
-  place-items: center;
+  display: grid; place-items: center;
   font-weight: 600;
-
-  box-shadow:
-    inset 0 2px 2px fade(#000,35%),
-    0 1px 1px fade(#000,25%);
+  box-shadow: inset 0 2px 2px fade(#000,35%), 0 1px 1px fade(#000,25%);
 }
 
 .checker-stack.black .pip {
   background: #0f172a;
-  border: 1px solid fade(#fff, 10%);
+  border: 1px solid fade(#fff,10%);
   color: @text;
-  box-shadow:
-    inset 0 2px 2px fade(#fff,25%),
-    0 1px 1px fade(#000,60%);
+  box-shadow: inset 0 2px 2px fade(#fff,25%), 0 1px 1px fade(#000,60%);
 }
 
 .checker-stack.white .pip {
   background: #f8fafc;
-  border: 1px solid fade(#000, 30%);
+  border: 1px solid fade(#000,30%);
   color: #0b0b0b;
-  box-shadow:
-    inset 0 2px 2px fade(#000,20%),
-    0 1px 1px fade(#000,40%);
+  box-shadow: inset 0 2px 2px fade(#000,20%), 0 1px 1px fade(#000,40%);
 }
 
-.count {
-  color: @muted;
-  font-variant-numeric: tabular-nums;
-  font-size: 0.8rem;
-}
+.count { color: @muted; font-variant-numeric: tabular-nums; font-size: 0.8rem; }
 
-/* Zustände, falls du später gültige / ungültige Züge highlightest */
-.point-cell.is-from  { box-shadow: inset 0 0 0 3px fade(@accentB, 60%); }
-.point-cell.is-to    { box-shadow: inset 0 0 0 3px fade(@ok, 60%); }
-.point-cell.is-error { box-shadow: inset 0 0 0 3px fade(@bad, 60%); }
-
-/* =========================
-   Footer / Buttons
-   ========================= */
-
-#controls {
-  margin-top: 24px;
-}
+#controls { margin-top: 24px; }
 
 .btn {
   appearance: none;
-  border: 0;
-  line-height: 1.2;
-  font-weight: 600;
+  border: 1px solid fade(@accentB,40%);
   border-radius: @radius-sm;
   padding: 10px 14px;
   font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   background: @accentB;
   color: #fff;
-  border: 1px solid fade(@accentB, 40%);
   box-shadow: 0 10px 24px fade(#000,80%);
-  transition: background .15s ease, box-shadow .15s ease;
+  transition: background .15s, box-shadow .15s;
 }
-
 .btn:hover {
-  background: lighten(@accentB, 8%);
-  box-shadow:
-    0 0 0 2px fade(@accentB,40%),
-    0 16px 30px fade(#000,80%);
+  background: lighten(@accentB,8%);
+  box-shadow: 0 0 0 2px fade(@accentB,40%), 0 16px 30px fade(#000,80%);
 }
-
-.btn:active {
-  background: darken(@accentB, 5%);
-}
-
-.btn-undo {
-  background-color: #ef4444;
-}
-
-/* =========================
-   Responsive Basics
-   ========================= */
+.btn:active { background: darken(@accentB,5%); }
+.btn-undo { background: @bad; }
 
 @media (max-width: 900px) {
   @pointHeight: 82px;
-  @triangleHeight: 62px;
-
-  .row-top,
-  .row-bottom {
-    height: @pointHeight;
-  }
-
-  .title {
-    font-size: 1.5rem;
-  }
-
-  .count {
-    display: none;
-  }
-
-  #status-bar {
-    flex-direction: column;
-  }
-
-  .status-block {
-    min-width: 0;
-  }
+  .row-top, .row-bottom { height: @pointHeight; }
+  .title { font-size: 1.5rem; }
+  .count { display: none; }
+  #status-bar { flex-direction: column; }
+  .status-block { min-width: 0; }
 }

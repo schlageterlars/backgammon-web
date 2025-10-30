@@ -12,7 +12,7 @@
   <div class="row row-top">
     <div class="gutter"></div>
 
-    @for(p <- (24 to 19 by -1)) {
+    @for(p <- (13 to 18)) {
       @defining(fields(p - 1)) { field =>
         <div class="point-cell top" data-point="@p">
           <span class="point-label">@p</span>
@@ -33,7 +33,7 @@
 
     <div class="bar" aria-label="Bar"></div>
 
-    @for(p <- (18 to 13 by -1)) {
+    @for(p <- (19 to 24)) {
       @defining(fields(p - 1)) { field =>
         <div class="point-cell top" data-point="@p">
           <span class="point-label">@p</span>
@@ -64,7 +64,7 @@
   <div class="row row-bottom">
     <div class="gutter"></div>
 
-    @for(p <- 1 to 6) {
+    @for(p <- 12 to 7 by -1) {
       @defining(fields(p - 1)) { field =>
         <div class="point-cell bottom" data-point="@p">
           <span class="point-label">@p</span>
@@ -85,7 +85,7 @@
 
     <div class="bar" aria-label="Bar"></div>
 
-    @for(p <- 7 to 12) {
+    @for(p <- 6 to 1 by -1 ) {
       @defining(fields(p - 1)) { field =>
         <div class="point-cell bottom" data-point="@p">
           <span class="point-label">@p</span>
