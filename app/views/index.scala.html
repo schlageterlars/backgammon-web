@@ -1,31 +1,33 @@
 @import de.htwg.se.backgammon.model.Player
 @(gameController: de.htwg.se.backgammon.controller.IController)
-@main("Backgammon") {
-  1
-  <h1>Backgammon - @gameController.currentPlayer it's your turn!</h1>
-  <pr>Dice: @gameController.dice.mkString(", ")</pr>
-  <table class="board">
-    <tr>
-      @for((field, index) <- gameController.game.fields.zipWithIndex) {
-        <th>@(index + 1)</th>
-      }
-    </tr>
-    <tr>
-      @for(field <- gameController.game.fields) {
-        <td>
-          @if(field.isEmpty()) {
-            <span class="empty">-</span>
-          } else if(field.isOccupiedBy(Player.Black)) {
-            <span class="black">B (@field.number)</span>
-          } else {
-            <span class="white">W (@field.number)</span>
-          }
-        </td>
-      }
-    </tr>
-  </table>
 
-  <form action="@routes.HomeController.undo()" method="get" style="text-align: center;">
-    <button type="submit">Undo last move</button>
-  </form>
+@main("Backgammon") {
+  <div id="game">
+    <header id="game-header">
+      <h1 class="title">
+        Backgammon – <span id="current-player">@gameController.currentPlayer</span> ist am Zug
+      </h1>
+
+      <div id="status-bar">
+        <div class="status-block" id="dice-panel">
+          <span class="label">Würfel:</span>
+          <ul class="dice-list">
+            @for(d <- gameController.dice) {
+              <li class="die" aria-label="Würfel">@d</li>
+            }
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <main id="board-area">
+      @components.board(gameController)
+    </main>
+
+    <footer id="controls">
+      <form action="@routes.HomeController.undo()" method="get">
+        <button class="btn btn-undo" type="submit">Zug zurücknehmen</button>
+      </form>
+    </footer>
+  </div>
 }
