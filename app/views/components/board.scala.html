@@ -1,110 +1,26 @@
-@*
-  Backgammon Board Component (2×12 Punkte, Bar, Bear-off)
-*@
 @import de.htwg.se.backgammon.model.Player
 @(gameController: de.htwg.se.backgammon.controller.IController)
 
-@defining(gameController.game.fields) { fields =>
-
-<section id="bg-board" class="bg-board" aria-label="Backgammon-Brett">
-
-  <!-- OBERREIHE: 24..19 | BAR | 18..13 -->
-  <div class="row row-top">
-    <div class="gutter"></div>
-
-    @for(p <- (13 to 18)) {
-      @defining(fields(p - 1)) { field =>
-        <div class="point-cell top" data-point="@p">
-          <span class="point-label">@p</span>
-          @if(field.isEmpty()) {
-            <span class="checker-stack empty">–</span>
-          } else if(field.isOccupiedBy(Player.Black)) {
-            <span class="checker-stack black">
-              <span class="pip"></span><span class="count">(@field.number)</span>
-            </span>
-          } else {
-            <span class="checker-stack white">
-              <span class="pip"></span><span class="count">(@field.number)</span>
-            </span>
-          }
-        </div>
+<div class="container my-5">
+  @defining(gameController.game.fields) { fields =>
+    <div class="d-grid mx-auto board rounded shadow-lg">
+      @for(i <- 1 to 24) {
+        @defining(fields(i - 1)) { field =>
+          <div class="cell d-flex align-items-center justify-content-center flex-column" data-point="@i">
+            @if(field.isEmpty()) {
+              <span class="text-white-50">–</span>
+            } else if(field.isOccupiedBy(Player.Black)) {
+              <div class="checker black">
+                <span class="fw-semibold">@field.number</span>
+              </div>
+            } else {
+              <div class="checker white">
+                <span class="fw-semibold text-dark">@field.number</span>
+              </div>
+            }
+          </div>
+        }
       }
-    }
-
-    <div class="bar" aria-label="Bar"></div>
-
-    @for(p <- (19 to 24)) {
-      @defining(fields(p - 1)) { field =>
-        <div class="point-cell top" data-point="@p">
-          <span class="point-label">@p</span>
-          @if(field.isEmpty()) {
-            <span class="checker-stack empty">–</span>
-          } else if(field.isOccupiedBy(Player.Black)) {
-            <span class="checker-stack black">
-              <span class="pip"></span><span class="count">(@field.number)</span>
-            </span>
-          } else {
-            <span class="checker-stack white">
-              <span class="pip"></span><span class="count">(@field.number)</span>
-            </span>
-          }
-        </div>
-      }
-    }
-  </div>
-
-  <!-- MITTELLEISTE (optisch + Bar-Label) -->
-  <div class="middle">
-    <div class="bearoff-spacer"></div>
-    <div class="gutter"></div>
-    <div class="bearoff-spacer"></div>
-  </div>
-
-  <!-- UNTERREIHE: 1..6 | BAR | 7..12 -->
-  <div class="row row-bottom">
-    <div class="gutter"></div>
-
-    @for(p <- 12 to 7 by -1) {
-      @defining(fields(p - 1)) { field =>
-        <div class="point-cell bottom" data-point="@p">
-          <span class="point-label">@p</span>
-          @if(field.isEmpty()) {
-            <span class="checker-stack empty"></span>
-          } else if(field.isOccupiedBy(Player.Black)) {
-            <span class="checker-stack black">
-              <span class="pip"></span><span class="count">(@field.number)</span>
-            </span>
-          } else {
-            <span class="checker-stack white">
-              <span class="pip"></span><span class="count">(@field.number)</span>
-            </span>
-          }
-        </div>
-      }
-    }
-
-    <div class="bar" aria-label="Bar"></div>
-
-    @for(p <- 6 to 1 by -1 ) {
-      @defining(fields(p - 1)) { field =>
-        <div class="point-cell bottom" data-point="@p">
-          <span class="point-label">@p</span>
-          @if(field.isEmpty()) {
-            <span class="checker-stack empty">–</span>
-          } else if(field.isOccupiedBy(Player.Black)) {
-            <span class="checker-stack black">
-              <span class="pip"></span><span class="count">(@field.number)</span>
-            </span>
-          } else {
-            <span class="checker-stack white">
-              <span class="pip"></span><span class="count">(@field.number)</span>
-            </span>
-          }
-        </div>
-      }
-    }
-  </div>
-
-</section>
-
-}
+    </div>
+  }
+</div>

@@ -8,16 +8,26 @@
         Backgammon – <span id="current-player">@gameController.currentPlayer</span> ist am Zug
       </h1>
 
-      <div id="status-bar">
-        <div class="status-block" id="dice-panel">
-          <span class="label">Würfel:</span>
-          <ul class="dice-list">
+      <div class="position-absolute top-0 end-0 m-3">
+        <div class="alert alert-info p-2 mb-0" role="alert">
+          <span id="current-player">@gameController.currentPlayer's turn</span>
+          <ul class="list-inline mb-0">
             @for(d <- gameController.dice) {
-              <li class="die" aria-label="Würfel">@d</li>
+              <li class="list-inline-item badge bg-secondary fs-6" aria-label="Würfel">@d</li>
             }
           </ul>
         </div>
       </div>
+
+      
+      <div class="alert alert-secondary d-flex align-items-center justify-content-between" role="alert">
+        <strong class="me-3">Brettgröße:</strong>
+        <ul class="list-group list-group-horizontal mb-0">
+          <li class="list-group-item list-group-item-action text-center px-4">Klein</li>
+          <li class="list-group-item list-group-item-action text-center px-4">Mittel</li>
+          <li class="list-group-item list-group-item-action text-center px-4">Klassisch</li>
+        </ul>
+      </div>  
     </header>
 
     <main id="board-area">
