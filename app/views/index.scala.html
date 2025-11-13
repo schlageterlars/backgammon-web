@@ -2,23 +2,23 @@
 @(gameController: de.htwg.se.backgammon.controller.IController)
 
 @main("Backgammon") {
+        @components.menu(
+        brand =   
+        Html(s"""
+          <h1 class="title">
+            Backgammon – <span id="current-player">${gameController.currentPlayer}</span> ist am Zug
+          </h1>
+          """
+        ),
+        items = Seq(
+          ("Home", routes.HomeController.index().url),
+          ("Rules", routes.HomeController.rules.url)
+        ),
+        idBase = "mainNav",
+        expandAt = Some("md")
+      )
   <div id="game">
     <header id="game-header">
-      <h1 class="title">
-        Backgammon – <span id="current-player">@gameController.currentPlayer</span> ist am Zug
-      </h1>
-
-      <div class="position-absolute top-0 end-0 m-3">
-        <div class="alert alert-info p-2 mb-0" role="alert">
-          <span id="current-player">@gameController.currentPlayer's turn</span>
-          <ul class="list-inline mb-0">
-            @for(d <- gameController.dice) {
-              <li class="list-inline-item badge bg-secondary fs-6" aria-label="Würfel">@d</li>
-            }
-          </ul>
-        </div>
-      </div>
-
       
       <div class="alert alert-secondary d-flex align-items-center justify-content-between" role="alert">
         <strong class="me-3">Brettgröße:</strong>
