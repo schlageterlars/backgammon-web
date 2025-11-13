@@ -18,12 +18,12 @@
                 else "white"
               ) { colorClass =>
 
-                <div class="cell @if(i >= cols) {bottom}" data-point="@i">
+                <div class="cell @if(i >= cols) {bottom} else {top}" data-point="@i">
 
                   @if(colorClass == "empty") {
                     <span class="text-white-50">–</span>
                   } else {
-                    <div class="checker-stack @colorClass">
+                    <div class="checker-stack @colorClass @if(i >= cols) {bottom} else {top}">
                       @for(_ <- 1 to field.number) {
                         <div class="checker @colorClass"></div>
                       }
