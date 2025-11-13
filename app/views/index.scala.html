@@ -4,9 +4,21 @@
 @main("Backgammon") {
   <div id="game" class="m-3">
     <header id="game-header" class="m-3">
-      <h1 class="title mb-3">
-        Backgammon – <span id="current-player-headline">@gameController.currentPlayer</span> ist am Zug
-      </h1>
+      @components.menu(
+        brand =   
+        Html(s"""
+          <h1 class="title">
+            Backgammon – <span id="current-player">${gameController.currentPlayer}</span> ist am Zug
+          </h1>
+          """
+        ),
+        items = Seq(
+          ("Home", routes.HomeController.index().url),
+          ("Rules", routes.HomeController.rules.url)
+        ),
+        idBase = "mainNav",
+        expandAt = Some("md")
+      )
 
       <div class="d-flex flex-wrap align-items-center justify-content-between m-6 gap-3">
         <!-- Würfelanzeige -->

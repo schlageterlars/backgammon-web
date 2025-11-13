@@ -1,0 +1,37 @@
+@(brand: Html = Html("<span>Brand</span>"),
+  items: Seq[(String, String)] = Seq(
+    ("Entry 1", "#entry1"),
+    ("Entry 2", "#entry2")
+  ),
+  idBase: String = "menu",
+  expandAt: Option[String] = Some("lg")
+)
+
+@defining(expandAt.map(e => s"navbar-expand-$e").getOrElse("")) { expandClass =>
+@defining(s"${idBase}-collapse") { collapseId =>
+        <nav class="navbar @expandClass navbar-light bg-light" aria-label="Main navigation">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">@brand</a>
+            <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#@collapseId"
+            aria-controls="@collapseId"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="@collapseId">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                @for((label, href) <- items) {
+                <li class="nav-item">
+                    <a class="nav-link" href="@href">@Html(label)</a>
+                </li>
+                }
+            </ul>
+            </div>
+        </div>
+        </nav>
+    } 
+}
