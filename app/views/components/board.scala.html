@@ -6,19 +6,23 @@
     <div class="d-grid mx-auto board rounded shadow-lg">
       @for(i <- 1 to 24) {
         @defining(fields(i - 1)) { field =>
-          <div class="cell d-flex align-items-center justify-content-center flex-column" data-point="@i">
-            @if(field.isEmpty()) {
-              <span class="text-white-50">–</span>
-            } else if(field.isOccupiedBy(Player.Black)) {
-              <div class="checker black">
-                <span class="fw-semibold">@field.number</span>
-              </div>
-            } else {
-              <div class="checker white">
-                <span class="fw-semibold text-dark">@field.number</span>
-              </div>
-            }
-          </div>
+          @defining(
+            if (field.isEmpty()) "empty"
+            else if (field.isOccupiedBy(Player.Black)) "black"
+            else "white"
+          ) { colorClass =>
+            <div class="cell" data-point="@i">
+              @if(colorClass == "empty") {
+                <span class="text-white-50">–</span>
+              } else {
+                <div class="checker-stack @colorClass @if(i >= 13) {bottom} else {top}">
+                  @for(_ <- 1 to field.number) {
+                    <div class="checker @colorClass"></div>
+                  }
+                </div>
+              }
+            </div>
+          }
         }
       }
     </div>

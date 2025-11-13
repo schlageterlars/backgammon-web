@@ -1,5 +1,4 @@
 :root {
-  /* optional, wenn du eigene Farben willst */
   --board-scale: 1;
   --checker-size: 40px;
 }
@@ -12,7 +11,6 @@ body {
 }
 
 /* --- Board Layout --- */
-
 #game #board-wrapper { position: relative; }
 #game #board-area { margin-bottom: 24px; }
 
@@ -47,9 +45,9 @@ body {
   overflow: hidden;
   aspect-ratio: 3 / 1; /* mobil */
   display: flex;
-  align-items: center;
+  align-items: center;       /* zentriert den „–“ Platzhalter */
   justify-content: center;
-  z-index: 1; /* über Mittelleiste */
+  z-index: 1;                /* über Mittelleiste */
 }
 
 #game .cell::before {
@@ -80,7 +78,22 @@ body {
   #game .cell:nth-child(n+13)::before { transform: rotate(180deg); }
 }
 
-/* --- Checker --- */
+/* --- Checker & Stacks --- */
+#game .checker-stack {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 8px;
+  bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+}
+#game .checker-stack.top    { justify-content: flex-start; }
+#game .checker-stack.bottom { justify-content: flex-end; }
+#game .checker-stack.empty  { color: #9ca3af; }
 
 #game .checker {
   width: var(--checker-size);
@@ -101,21 +114,18 @@ body {
   background: radial-gradient(circle at 30% 30%, #444, #000);
   color: #fff;
 }
-
 #game .checker.white {
   background: radial-gradient(circle at 30% 30%, #fff, #cfcfcf);
   border: 1px solid #b5b5b5;
   color: #0b0b0b;
 }
 
-/* optional: nur wenn verwendet */
+/* --- Sonstiges --- */
 #game .pip {
   width: 22px; height: 22px; border-radius: 999px;
   display: grid; place-items: center; font-weight: 600;
   box-shadow: inset 0 2px 2px rgba(0,0,0,0.35), 0 1px 1px rgba(0,0,0,0.25);
 }
-#game .checker-stack { display: flex; align-items: center; gap: 8px; }
-#game .checker-stack.empty { color: #9ca3af; }
 
 #board-zoom .btn { min-width: 44px; }
 #board-zoom #zoom-display { min-width: 64px; display: inline-block; text-align: center; }
@@ -129,7 +139,4 @@ body {
   vertical-align: middle;
   transition: transform 0.1s ease;
 }
-
-.dice-img:hover {
-  transform: translateY(-2px) scale(1.05);
-}
+.dice-img:hover { transform: translateY(-2px) scale(1.05); }
