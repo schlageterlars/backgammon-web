@@ -2,29 +2,44 @@
 @(gameController: de.htwg.se.backgammon.controller.IController)
 
 <div class="container my-5">
+
   @defining(gameController.game.fields) { fields =>
-    <div class="d-grid mx-auto board rounded shadow-lg">
-      @for(i <- 1 to 24) {
-        @defining(fields(i - 1)) { field =>
-          @defining(
-            if (field.isEmpty()) "empty"
-            else if (field.isOccupiedBy(Player.Black)) "black"
-            else "white"
-          ) { colorClass =>
-            <div class="cell" data-point="@i">
-              @if(colorClass == "empty") {
-                <span class="text-white-50">–</span>
-              } else {
-                <div class="checker-stack @colorClass @if(i >= 13) {bottom} else {top}">
-                  @for(_ <- 1 to field.number) {
-                    <div class="checker @colorClass"></div>
+    @defining(fields.length / 2) { cols =>
+      @defining(2) { rows =>
+        @defining(1 / (cols.toDouble / rows) * 2) { aspect => 
+
+          <div class="d-grid mx-auto board rounded shadow-lg" style="--cols: @cols; --rows: @rows; --aspect: @aspect;">
+            
+            @for((field, i) <- fields.zipWithIndex) {
+
+              @defining(
+                if (field.isEmpty()) "empty"
+                else if (field.isOccupiedBy(Player.Black)) "black"
+                else "white"
+              ) { colorClass =>
+
+                <div class="cell @if(i >= cols) {bottom}" data-point="@i">
+
+                  @if(colorClass == "empty") {
+                    <span class="text-white-50">–</span>
+                  } else {
+                    <div class="checker-stack @colorClass">
+                      @for(_ <- 1 to field.number) {
+                        <div class="checker @colorClass"></div>
+                      }
+                    </div>
                   }
+
                 </div>
+
               }
-            </div>
-          }
+
+            }
+
+          </div>
+
         }
       }
-    </div>
+    }
   }
 </div>

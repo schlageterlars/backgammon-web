@@ -18,6 +18,7 @@ import de.htwg.se.backgammon.util.PrettyPrint
 import org.apache.commons.text.StringEscapeUtils.escapeHtml4
 import de.htwg.se.backgammon.util.Event
 import de.htwg.se.backgammon.view.GUI
+import de.htwg.se.backgammon.model.base.Game
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -39,5 +40,18 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     Ok(views.html.rules())
   }
 
+  def setBoardSize(size: String) = Action { implicit request: Request[AnyContent] =>
+  val game: Game = size match {
+    case "small"  => new Game(12, 10)
+    case "medium" => new Game(16, 12)
+    case "classic"=> new Game(24, 15)
+    case _        => new Game(24, 15)
+  }
+  gameController.init(game)
+
+  // Redirect to the main page (or wherever your game view is)
+  Redirect(routes.HomeController.index())
+    .flashing("success" -> s"Board size set to $size")
+  }
 
 }

@@ -2,7 +2,8 @@
 @(gameController: de.htwg.se.backgammon.controller.IController)
 
 @main("Backgammon") {
-  <div id="game" class="m-3">
+}
+  <div id="game" class="m-3" >
     <header id="game-header" class="m-3">
       @components.menu(
         brand =   
@@ -34,6 +35,7 @@
             }
           </ul>
         </div>
+        
 
         <!-- Board Zoom -->
         <div id="board-zoom" class="btn-group ms-2" role="group" aria-label="Brettgröße steuern">
@@ -49,7 +51,23 @@
             <i class="bi bi-zoom-in"></i>
           </button>
         </div>
-      </div>
+
+
+        <!-- Brettgröße -->
+        <div class="alert alert-secondary d-flex align-items-center mb-0 flex-shrink-0" role="alert">
+          <strong class="me-3">Brettgröße:</strong>
+          <ul  class="list-group list-group-horizontal mb-0">
+            <li class="list-group-item text-center px-4">
+              <a class="list-group-item-action" href="@routes.HomeController.setBoardSize("small")">Klein</a>
+            </li>
+            <li class="list-group-item text-center px-4">
+              <a class="list-group-item-action" href="@routes.HomeController.setBoardSize("medium")">Mittel</a>
+            </li>
+            <li class="list-group-item text-center px-4">
+              <a class="list-group-item-action" href="@routes.HomeController.setBoardSize("classic")">Klassisch</a>
+            </li>
+          </ul>
+        </div>
     </header>
 
     <!-- Wrapper hält die skalierte Brett-Höhe im Flow -->
@@ -67,4 +85,3 @@
   </div>
 
   <script defer src='@routes.Assets.versioned("javascripts/boardSize.js")'></script>
-}
