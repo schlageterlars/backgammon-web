@@ -9,7 +9,7 @@
 
 @defining(expandAt.map(e => s"navbar-expand-$e").getOrElse("")) { expandClass =>
 @defining(s"${idBase}-collapse") { collapseId =>
-        <nav class="navbar @expandClass navbar-light bg-light" aria-label="Main navigation">
+        <nav class="navbar @expandClass navbar-light" aria-label="Main navigation">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">@brand</a>
             <button

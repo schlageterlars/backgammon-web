@@ -35,14 +35,19 @@
           </ul>
         </div>
 
-        <!-- Brettgröße -->
-        <div class="alert alert-secondary d-flex align-items-center mb-0 flex-shrink-0 board-size-panel" role="alert">
-          <strong class="me-3">Brettgröße:</strong>
-          <ul id="board-size-switcher" class="list-group list-group-horizontal mb-0">
-            <li class="list-group-item list-group-item-action text-center px-4" data-size="small">Klein</li>
-            <li class="list-group-item list-group-item-action text-center px-4" data-size="medium">Mittel</li>
-            <li class="list-group-item list-group-item-action text-center px-4" data-size="classic">Klassisch</li>
-          </ul>
+        <!-- Board Zoom -->
+        <div id="board-zoom" class="btn-group ms-2" role="group" aria-label="Brettgröße steuern">
+          <button type="button" class="btn btn-outline-primary" data-action="decrease" aria-label="Zoom out">
+            <i class="bi bi-zoom-out"></i>
+          </button>
+
+          <button type="button" class="btn btn-primary" data-action="reset" aria-label="Reset Zoom">
+            <i class="bi bi-aspect-ratio"></i> <span id="zoom-display">100%</span>
+          </button>
+
+          <button type="button" class="btn btn-outline-primary" data-action="increase" aria-label="Zoom in">
+            <i class="bi bi-zoom-in"></i>
+          </button>
         </div>
       </div>
     </header>
