@@ -6,8 +6,13 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
 GET     /rules                      controllers.HomeController.rules
-GET     /undo                       controllers.HomeController.undo()      
+GET     /undo                       controllers.HomeController.undo()
 GET     /setBoardSize               controllers.HomeController.setBoardSize(size: String)
+
+# AJAX API
+POST    /api/undo                   controllers.HomeController.apiUndo
+POST    /api/setBoardSize/:size     controllers.HomeController.apiSetBoardSize(size: String)
+POST    /api/move                   controllers.HomeController.apiMove
 
 
 # Map static resources from the /public folder to the /assets URL path

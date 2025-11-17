@@ -1,5 +1,6 @@
 @import de.htwg.se.backgammon.model.Player
-@(gameController: de.htwg.se.backgammon.controller.IController)
+@import play.api.mvc.RequestHeader
+@(gameController: de.htwg.se.backgammon.controller.IController)(implicit request: RequestHeader)
 
 @main("Backgammon") {
 }
@@ -58,13 +59,13 @@
           <strong class="me-3">Brettgröße:</strong>
           <ul  class="list-group list-group-horizontal mb-0">
             <li class="list-group-item text-center px-4">
-              <a class="list-group-item-action" href="@routes.HomeController.setBoardSize("small")">Klein</a>
+              <a class="list-group-item-action" href="@routes.HomeController.setBoardSize("small")" data-ajax="set-board" data-size="small">Klein</a>
             </li>
             <li class="list-group-item text-center px-4">
-              <a class="list-group-item-action" href="@routes.HomeController.setBoardSize("medium")">Mittel</a>
+              <a class="list-group-item-action" href="@routes.HomeController.setBoardSize("medium")" data-ajax="set-board" data-size="medium">Mittel</a>
             </li>
             <li class="list-group-item text-center px-4">
-              <a class="list-group-item-action" href="@routes.HomeController.setBoardSize("classic")">Klassisch</a>
+              <a class="list-group-item-action" href="@routes.HomeController.setBoardSize("classic")" data-ajax="set-board" data-size="classic">Klassisch</a>
             </li>
           </ul>
         </div>
@@ -78,10 +79,15 @@
     </div>
 
     <footer id="controls" class="mt-3">
-      <form action='@routes.HomeController.undo()' method="get">
-        <button class="btn btn-outline-secondary" type="submit">Zug zurücknehmen</button>
-      </form>
+      <button id="undo-btn" class="btn btn-outline-secondary" type="button">Zug zurücknehmen</button>
     </footer>
   </div>
 
   <script defer src='@routes.Assets.versioned("javascripts/boardSize.js")'></script>
+  <script defer src='@routes.Assets.versioned("javascripts/ajax.js")'></script>
+  @defining({
+    val t = helper.CSRF.getToken(request)
+    if (t == null) "" else t.value
+  }) { token =>
+    <meta name="csrf-token" content="@token">
+  }
