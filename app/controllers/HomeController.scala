@@ -19,6 +19,7 @@ import org.apache.commons.text.StringEscapeUtils.escapeHtml4
 import de.htwg.se.backgammon.util.Event
 import de.htwg.se.backgammon.view.GUI
 import de.htwg.se.backgammon.model.base.Game
+import de.htwg.se.backgammon.model.base.Move
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -50,6 +51,14 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     gameController.init(game)
 
     Ok(views.html.components.board(game)) 
+  }
+
+  def move(from: String, to: String) = Action { implicit request: Request[AnyContent] => 
+    gameController.doAndPublish(
+        gameController.put,
+        Move.create(gameController.game, gameController.currentPlayer, from.toInt, to.toInt)
+      )
+    Ok(views.html.components.board(gameController.game))
   }
 
 }

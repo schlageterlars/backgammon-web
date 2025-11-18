@@ -122,6 +122,20 @@ body {
   color: #0b0b0b;
 }
 
+#game.active-move {
+  cursor: grab;
+}
+
+#game .checker.active {
+  outline: 4px solid yellow; 
+  outline-offset: -2px;
+  box-shadow: 
+    0 0 10px 5px rgba(255, 255, 0, 0.7), /* Yellow glow */
+    inset 0 2px 4px rgba(255,255,255,0.25),
+    inset 0 -2px 4px rgba(0,0,0,0.45),
+    0 2px 3px rgba(0,0,0,0.5);
+}
+
 /* --- Sonstiges --- */
 #game .pip {
   width: 22px; height: 22px; border-radius: 999px;
