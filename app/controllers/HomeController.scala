@@ -41,17 +41,15 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
   }
 
   def setBoardSize(size: String) = Action { implicit request: Request[AnyContent] =>
-  val game: Game = size match {
-    case "small"  => new Game(12, 10)
-    case "medium" => new Game(16, 12)
-    case "classic"=> new Game(24, 15)
-    case _        => new Game(24, 15)
-  }
-  gameController.init(game)
+    val game: Game = size match {
+      case "small"  => new Game(12, 10)
+      case "medium" => new Game(16, 12)
+      case "classic"=> new Game(24, 15)
+      case _        => new Game(24, 15)
+    }
+    gameController.init(game)
 
-  // Redirect to the main page (or wherever your game view is)
-  Redirect(routes.HomeController.index())
-    .flashing("success" -> s"Board size set to $size")
+    Ok(views.html.components.board(game)) 
   }
 
 }
