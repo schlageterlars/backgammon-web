@@ -6,10 +6,12 @@
   @defining(gameController.game.fields) { fields =>
     @defining(fields.length / 2) { cols =>
       @defining(2) { rows =>
-        @defining(1 / (cols.toDouble / rows) * 2) { aspect => 
+        @defining(1 / (cols.toDouble / rows) * 2) { aspect =>
 
-          <div class="d-grid mx-auto board rounded shadow-lg" style="--cols: @cols; --rows: @rows; --aspect: @aspect;">
-            
+          <!-- BOARD -->
+          <div class="d-grid mx-auto board rounded shadow-lg"
+               style="--cols: @cols; --rows: @rows; --aspect: @aspect;">
+
             @for((field, i) <- fields.zipWithIndex) {
 
               @defining(
@@ -42,4 +44,24 @@
       }
     }
   }
+
+  <!-- BAR UNTER DEM BRETT -->
+  <div class="bar-container mt-3 d-flex justify-content-center gap-4">
+    @defining(gameController.game.bar(Player.White)) { whiteBar =>
+      <button type="button"
+              class="bar-slot bar-white btn btn-sm btn-outline-light"
+              data-player="white">
+        White Bar (@whiteBar)
+      </button>
+    }
+
+    @defining(gameController.game.bar(Player.Black)) { blackBar =>
+      <button type="button"
+              class="bar-slot bar-black btn btn-sm btn-outline-light"
+              data-player="black">
+        Black Bar (@blackBar)
+      </button>
+    }
+  </div>
+
 </div>

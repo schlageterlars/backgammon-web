@@ -5,7 +5,7 @@
 
 body {
   margin: 0;
-  background-color: #1e293b;
+  background-color: #282c34;
   color: #e5e7eb;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
@@ -142,3 +142,58 @@ body {
   transition: transform 0.1s ease;
 }
 .dice-img:hover { transform: translateY(-2px) scale(1.05); }
+
+/* Selection highlight for chosen source cell */
+#game .cell.selected {
+  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.15), 0 6px 18px rgba(0,0,0,0.35);
+  transform: translateY(-4px);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+/* While request pending, make board less interactive to avoid duplicate moves */
+.board-busy { pointer-events: none; opacity: 0.85; }
+
+/* Ensure checkers receive pointer events */
+#game .checker { pointer-events: auto; cursor: pointer; }
+
+.cell.hint {
+  box-shadow: 0 0 0 3px rgba(255, 230, 0, 0.85);
+  position: relative;
+}
+
+.cell.hint::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: inherit;
+  box-shadow: 0 0 12px rgba(255, 230, 0, 0.9);
+  pointer-events: none;
+}
+
+.bar-container {
+  text-align: center;
+}
+
+.bar-slot {
+  min-width: 80px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.bar-slot .bar-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+
+.bar-container {
+  text-align: center;
+}
+
+.bar-slot {
+  min-width: 110px;
+  cursor: pointer;
+}

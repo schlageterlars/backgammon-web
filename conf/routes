@@ -13,6 +13,8 @@ GET     /setBoardSize               controllers.HomeController.setBoardSize(size
 POST    /api/undo                   controllers.HomeController.apiUndo
 POST    /api/setBoardSize/:size     controllers.HomeController.apiSetBoardSize(size: String)
 POST    /api/move                   controllers.HomeController.apiMove
+POST    /api/hints                  controllers.HomeController.apiHints
+POST    /api/bearIn                 controllers.HomeController.apiBearIn
 
 
 # Map static resources from the /public folder to the /assets URL path

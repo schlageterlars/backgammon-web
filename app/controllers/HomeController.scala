@@ -21,8 +21,11 @@ import de.htwg.se.backgammon.util.Event
 import de.htwg.se.backgammon.view.GUI
 import de.htwg.se.backgammon.model.base.Game
 import play.api.libs.json._
-import scala.util.{Success, Failure}
+import scala.util.{Try, Success, Failure}
 import de.htwg.se.backgammon.model.base.Move
+import de.htwg.se.backgammon.controller.strategy.ValidateMoveStrategy
+import de.htwg.se.backgammon.model.IGame
+import de.htwg.se.backgammon.model.base.BearInMove
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -65,9 +68,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
       case _         => new Game(24, 15)
     }
 
-    // Über das Model das Game setzen
-    val model = gameController.data
-    model.game = game
+    // Use controller init to set the game (notify observers)
+    gameController.init(game)
 
     Redirect(routes.HomeController.index())
       .flashing("success" -> s"Board size set to $size")
@@ -81,8 +83,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
       case "classic" => new Game(24, 15)
       case _         => new Game(24, 15)
     }
-    val model = gameController.data
-    model.game = game
+    // Use controller init to set the game (notify observers)
+    gameController.init(game)
     // Return updated board fragment and basic state so client can update without reload
     val boardHtml = views.html.components.board(gameController).toString()
     Ok(Json.obj(
@@ -97,28 +99,132 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
   // AJAX endpoint to perform a move: expects JSON { "from": Int, "to": Int }
   def apiMove = Action(parse.json) { (request: Request[JsValue]) =>
     val js: JsValue = request.body
-    logger.info(s"apiMove called. body=${js.toString()} headers=${request.headers.headers.mkString(",")}")
+    logger.info(s"apiMove called. body=${js.toString()}")
     val fromOpt: Option[Int] = (js \ "from").asOpt[Int]
     val toOpt: Option[Int] = (js \ "to").asOpt[Int]
 
-    (fromOpt, toOpt) match {
+    val result: Result = (fromOpt, toOpt) match {
       case (Some(from), Some(to)) =>
-        val move = Move.create(gameController.game, gameController.currentPlayer, from, to)
-        gameController.put(move) match {
-          case Success(_) =>
-            // Return updated board and state
-            val boardHtml = views.html.components.board(gameController).toString()
-            Ok(Json.obj(
-              "ok" -> true,
-              "boardHtml" -> boardHtml,
-              "currentPlayer" -> gameController.currentPlayer.toString,
-              "dice" -> Json.toJson(gameController.dice)
-            ))
-          case Failure(ex) =>
+        try {
+          val move = Move.create(gameController.game, gameController.currentPlayer, from, to)
+          logger.info(s"Move created: $move from=$from to=$to")
+          
+          // Use doAndPublish to properly execute the move with validation and observers
+          gameController.doAndPublish(gameController.put, move)
+          
+          logger.info(s"Move succeeded")
+          val boardHtml = views.html.components.board(gameController).toString()
+          Ok(Json.obj(
+            "ok" -> true,
+            "boardHtml" -> boardHtml,
+            "currentPlayer" -> gameController.currentPlayer.toString,
+            "dice" -> Json.toJson(gameController.dice)
+          ))
+        } catch {
+          case ex: Exception =>
+            logger.warn(s"Move failed: ${ex.getMessage}")
             BadRequest(Json.obj("ok" -> false, "error" -> ex.getMessage))
         }
       case _ => BadRequest(Json.obj("ok" -> false, "error" -> "missing from/to or invalid types"))
     }
+    result
   }
 
+  // AJAX endpoint to get possible destinations for a given source point
+  // Request:  { "from": Int }
+  // Response: { "ok": true, "from": Int, "destinations": [Int, ...] }
+  def apiHints = Action(parse.json) { (request: Request[JsValue]) =>
+    val js = request.body
+    logger.info(s"apiHints called. body=${js.toString()}")
+    val fromOpt: Option[Int] = (js \ "from").asOpt[Int]
+
+    val fields   = gameController.game.fields
+    val maxIndex = fields.length - 1
+    val current  = gameController.currentPlayer
+
+    val destinations: Seq[Int] = fromOpt match {
+      case Some(from) if from >= 0 && from <= maxIndex =>
+        val fromField = fields(from)
+
+        // Wenn das Startfeld leer ist oder nicht dem aktuellen Spieler gehört -> keine Hints
+        if (fromField.isEmpty() || !fromField.isOccupiedBy(current)) {
+          Seq.empty
+        } else {
+          (0 to maxIndex).flatMap { to =>
+            if (to == from) {
+              None
+            } else {
+              val targetField = fields(to)
+
+              // Zielfeld ist von Gegner besetzt? Dann keinen Hint!
+              if (!targetField.isEmpty() && !targetField.isOccupiedBy(current)) {
+                None
+              } else {
+                // Validierung mit deiner bestehenden Strategie
+                val isValid = Try {
+                  val move = Move.create(
+                    gameController.game,
+                    current,
+                    from,
+                    to
+                  )
+                  val validator = ValidateMoveStrategy(gameController, move)
+                  validator.validate() // wirft Exception bei ungültigem Zug
+                }.isSuccess
+
+                if (isValid) Some(to) else None
+              }
+            }
+          }
+        }
+
+      case _ =>
+        Seq.empty
+    }
+
+    Ok(
+      Json.obj(
+        "ok" -> true,
+        "from" -> fromOpt,
+        "destinations" -> destinations
+      )
+    )
+  }
+
+  // Request:  POST /api/bearIn
+  // Response: { ok: true, boardHtml, currentPlayer, dice } oder Fehler
+  def apiBearIn = Action { implicit request: Request[AnyContent] =>
+    logger.info("apiBearIn called")
+
+    // Bear-In-Move mit aktuellem Spieler und aktuellem Würfel
+    val move = BearInMove(
+      gameController.currentPlayer,
+      gameController.die
+    )
+
+    // Optional: Vorvalidierung – aber checkMove läuft in put sowieso noch mal
+    val result: Try[IGame] = gameController.put(move)
+
+    result match {
+      case Success(_) =>
+        val boardHtml = views.html.components.board(gameController).toString()
+        Ok(
+          Json.obj(
+            "ok"            -> true,
+            "boardHtml"     -> boardHtml,
+            "currentPlayer" -> gameController.currentPlayer.toString,
+            "dice"          -> Json.toJson(gameController.dice)
+          )
+        )
+
+      case Failure(ex) =>
+        logger.warn(s"BearIn failed: ${ex.getMessage}")
+        BadRequest(
+          Json.obj(
+            "ok"    -> false,
+            "error" -> ex.getMessage
+          )
+        )
+    }
+  }
 }
