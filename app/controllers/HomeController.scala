@@ -20,6 +20,12 @@ import de.htwg.se.backgammon.util.Event
 import de.htwg.se.backgammon.view.GUI
 import de.htwg.se.backgammon.model.base.Game
 import de.htwg.se.backgammon.model.base.Move
+import de.htwg.se.backgammon.controller.strategy.ValidateMoveStrategy
+import de.htwg.se.backgammon.model.IGame
+import de.htwg.se.backgammon.model.base.BearInMove
+import play.api.libs.json._
+import scala.util.{Try, Success, Failure}
+import play.filters.csrf._
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -61,4 +67,96 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     Ok(views.html.components.board(gameController.game))
   }
 
+  
+  // AJAX version to set board size without a redirect
+  def apiSetBoardSize(size: String) = Action { implicit request: Request[AnyContent] =>
+    val game: Game = size match {
+      case "small"   => new Game(12, 10)
+      case "medium"  => new Game(16, 12)
+      case "classic" => new Game(24, 15)
+      case _         => new Game(24, 15)
+    }
+    // Use controller init to set the game (notify observers)
+    gameController.init(game)
+    // Return updated board fragment and basic state so client can update without reload
+    val boardHtml = views.html.components.board(game).toString()
+    Ok(Json.obj(
+      "success" -> true,
+      "size" -> size,
+      "boardHtml" -> boardHtml,
+      "currentPlayer" -> gameController.currentPlayer.toString,
+      "dice" -> Json.toJson(gameController.dice)
+    ))
+  }
+
+
+  // AJAX endpoint to get possible destinations for a given source point
+  // Request:  { "from": Int }
+  // Response: { "ok": true, "from": Int, "destinations": [Int, ...] }
+  def apiHints(from: Int): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    val fields   = gameController.game.fields
+    val maxIndex = fields.length - 1
+    val current  = gameController.currentPlayer
+
+    val destinations: Seq[Int] = {
+      if (from < 0 || from > maxIndex) Seq.empty
+      else {
+        val fromField = fields(from)
+
+        if (fromField.isEmpty() || !fromField.isOccupiedBy(current)) {
+          Seq.empty
+        } else {
+          (0 to maxIndex).flatMap { to =>
+            if (to == from) None
+            else {
+              val targetField = fields(to)
+
+              if (!targetField.isEmpty() && !targetField.isOccupiedBy(current)) {
+                None
+              } else {
+                val isValid = Try {
+                  val move = Move.create(gameController.game, current, from, to)
+                  val validator = ValidateMoveStrategy(gameController, move)
+                  validator.validate()
+                }.isSuccess
+
+                if (isValid) Some(to) else None
+              }
+            }
+          }
+        }
+      }
+    }
+
+    Ok(Json.obj(
+      "ok"          -> true,
+      "from"        -> from,
+      "destinations"-> destinations
+    ))
+  }
+
+
+
+  // Request:  POST /api/bearIn
+  // Response: { ok: true, boardHtml, currentPlayer, dice } oder Fehler
+  def apiBearIn(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>    val move = BearInMove(gameController.currentPlayer, gameController.die)
+    val result: Try[IGame] = gameController.put(move)
+
+    result match {
+      case Success(_) =>
+        val boardHtml = views.html.components.board(gameController.game).toString()
+        Ok(Json.obj(
+          "ok"            -> true,
+          "boardHtml"     -> boardHtml,
+          "currentPlayer" -> gameController.currentPlayer.toString,
+          "dice"          -> Json.toJson(gameController.dice)
+        ))
+
+      case Failure(ex) =>
+        BadRequest(Json.obj(
+          "ok"    -> false,
+          "error" -> ex.getMessage
+        ))
+    }
+  }
 }

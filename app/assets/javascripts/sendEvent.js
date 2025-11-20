@@ -1,6 +1,66 @@
+// Backgammon Frontend: Basis von deinem Kollegen + Hint-Logik & Toaster von dir
 $(document).ready(function () {
+  var csrfToken = $('meta[name="csrf-token"]').attr('content') || '';
+  if (csrfToken) {
+    $.ajaxSetup({
+      headers: {
+        'Csrf-Token': csrfToken
+      }
+    });
+  }
 
-  $(".board-size-action").on("click", function () {
+  // --- Toaster ---
+  function showToast(message, level) {
+    level = level || 'info';
+    var $container = $('#toast-container');
+    if (!$container.length) {
+      $container = $("<div id='toast-container' style='position:fixed;top:1rem;right:1rem;z-index:1050;'></div>");
+      $('body').append($container);
+    }
+    var $el = $("<div class='alert alert-" + level + " alert-dismissible fade show' role='alert'></div>");
+    $el.text(message);
+    $el.append("<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>");
+    $container.append($el);
+    setTimeout(function () { $el.alert('close'); }, 6000);
+  }
+
+  // --- Hint-Hilfen ---
+  function clearHints() {
+    $("#board-area .cell.hint").removeClass("hint");
+  }
+
+  function applyHints(destinations) {
+    clearHints();
+    destinations.forEach(function (point) {
+      $("#board-area .cell[data-point='" + point + "']").addClass("hint");
+    });
+  }
+
+  let $currentActiveChecker = null;
+  let currentSourcePoint = null;
+  let hintsActive = false;
+
+  function clearSelection() {
+    if ($currentActiveChecker) {
+      $currentActiveChecker.removeClass("active");
+    }
+    $("#board-area .cell.selected").removeClass("selected");
+    $("#game").removeClass("active-move");
+    $currentActiveChecker = null;
+    currentSourcePoint = null;
+  }
+
+  function resetHintsState() {
+    clearHints();
+    hintsActive = false;
+    $("#hint-toggle")
+      .removeClass("active")
+      .attr("aria-pressed", "false");
+  }
+
+  // --- Boardgröße ---
+  $(".board-size-action").on("click", function (e) {
+    e.preventDefault();
     var size = $(this).data("size");
 
     $.ajax({
@@ -8,16 +68,26 @@ $(document).ready(function () {
       type: "GET",
       success: function (boardHtml) {
         $("#board-area").html(boardHtml);
+        clearSelection();
+        resetHintsState();
       },
       error: function () {
-        alert("Fehler beim Ändern der Brettgröße.");
+        showToast("Fehler beim Ändern der Brettgröße.", "danger");
       }
     });
   });
+  function applyHints(destinations) {
+    clearHints();
+    destinations.forEach(function(point) {
+      $('#board-area .cell[data-point="' + point + '"]').addClass('hint');
+    });
+  }
 
-  let $currentActiveChecker = null;
-  let currentSourcePoint = null;
+  function clearHints() {
+    $('#board-area .cell.hint').removeClass('hint');
+  }
 
+  // --- Klick auf Checker ---
   $(document).on("click", "#board-area .checker", function (e) {
     e.stopPropagation();
 
@@ -26,51 +96,84 @@ $(document).ready(function () {
     const clickedPoint = $sourceCell.data("point");
 
     if ($currentActiveChecker && $currentActiveChecker.is($clickedChecker)) {
-      $clickedChecker.removeClass("active");
-      $("#game").removeClass("active-move");
-      $currentActiveChecker = null;
-      currentSourcePoint = null;
+      clearSelection();
+      resetHintsState();
       return;
     }
-
-    if ($currentActiveChecker) {
-      $currentActiveChecker.removeClass("active");
-    }
+    clearSelection();
 
     $clickedChecker.addClass("active");
+    $sourceCell.addClass("selected");
     $("#game").addClass("active-move");
 
     $currentActiveChecker = $clickedChecker;
     currentSourcePoint = clickedPoint;
 
-    console.log(`Source point selected: ${currentSourcePoint}`);
+    console.log("Source point selected: " + currentSourcePoint);
   });
 
-
+  // --- Move-Flow, plus Hints-Reset & Toast ---
   $(document).on("click", "#board-area .cell", function () {
-    if (!$currentActiveChecker) return;
+    if (!$currentActiveChecker || currentSourcePoint == null) return;
 
     const $targetCell = $(this);
     const targetPoint = $targetCell.data("point");
 
-    console.log(`Move attempt from: ${currentSourcePoint} to: ${targetPoint}`);
+    console.log("Move attempt from: " + currentSourcePoint + " to: " + targetPoint);
 
     $.ajax({
       url: "/move?from=" + currentSourcePoint + "&to=" + targetPoint,
       type: "GET",
       success: function (boardHtml) {
         $("#board-area").html(boardHtml);
+        clearSelection();
+        resetHintsState();
       },
       error: function () {
-        alert("Fehler beim Verschieben.");
+        showToast("Fehler beim Verschieben.", "danger");
       }
     });
-
-    // Reset selection
-    $currentActiveChecker.removeClass("active");
-    $("#game").removeClass("active-move");
-    $currentActiveChecker = null;
-    currentSourcePoint = null;
   });
 
+  // --- Hint / Glühbirne --
+  $(document).on("click", "#hint-toggle", function (e) {
+    e.preventDefault();
+
+    hintsActive = !hintsActive;
+    $(this)
+      .toggleClass("active", hintsActive)
+      .attr("aria-pressed", hintsActive ? "true" : "false");
+
+    if (!hintsActive) {
+      clearHints();
+      return;
+    }
+
+    if (currentSourcePoint == null) {
+      showToast("Bitte zuerst ein Feld mit einem Stein auswählen.", "info");
+      resetHintsState();
+      return;
+    }
+
+    var payload = JSON.stringify({ from: currentSourcePoint });
+
+    $.ajax({
+      url: "/api/hints?from=" + currentSourcePoint,
+      method: "GET",
+      dataType: "json"
+    })
+
+      .done(function (data) {
+        console.log("hints response", data);
+        if (data && data.ok && Array.isArray(data.destinations)) {
+          applyHints(data.destinations);
+        } else {
+          showToast("Konnte keine Zughilfen berechnen.", "warning");
+        }
+      })
+      .fail(function (xhr, status, err) {
+        console.error("hints ajax failed", status, err, xhr.responseText);
+        showToast("Fehler beim Laden der Zughilfen.", "danger");
+      });
+  });
 });
