@@ -47,6 +47,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     Ok(views.html.rules())
   }
 
+  def boardHtml = views.html.components.board(gameController.game)
+
   def setBoardSize(size: String) = Action { implicit request: Request[AnyContent] =>
     val game: Game = size match {
       case "small"  => new Game(12, 10)
@@ -56,7 +58,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     }
     gameController.init(game)
 
-    Ok(views.html.components.board(game)) 
+    Ok(boardHtml) 
   }
 
   def move(from: String, to: String) = Action { implicit request: Request[AnyContent] => 
@@ -64,36 +66,15 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
         gameController.put,
         Move.create(gameController.game, gameController.currentPlayer, from.toInt, to.toInt)
       )
-    Ok(views.html.components.board(gameController.game))
-  }
-
-  
-  // AJAX version to set board size without a redirect
-  def apiSetBoardSize(size: String) = Action { implicit request: Request[AnyContent] =>
-    val game: Game = size match {
-      case "small"   => new Game(12, 10)
-      case "medium"  => new Game(16, 12)
-      case "classic" => new Game(24, 15)
-      case _         => new Game(24, 15)
-    }
-    // Use controller init to set the game (notify observers)
-    gameController.init(game)
-    // Return updated board fragment and basic state so client can update without reload
-    val boardHtml = views.html.components.board(game).toString()
     Ok(Json.obj(
       "success" -> true,
-      "size" -> size,
-      "boardHtml" -> boardHtml,
+      "boardHtml" -> boardHtml.toString(),
       "currentPlayer" -> gameController.currentPlayer.toString,
       "dice" -> Json.toJson(gameController.dice)
     ))
   }
 
-
-  // AJAX endpoint to get possible destinations for a given source point
-  // Request:  { "from": Int }
-  // Response: { "ok": true, "from": Int, "destinations": [Int, ...] }
-  def apiHints(from: Int): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+  def hints(from: Int): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     val fields   = gameController.game.fields
     val maxIndex = fields.length - 1
     val current  = gameController.currentPlayer
@@ -135,19 +116,15 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     ))
   }
 
-
-
-  // Request:  POST /api/bearIn
-  // Response: { ok: true, boardHtml, currentPlayer, dice } oder Fehler
-  def apiBearIn(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>    val move = BearInMove(gameController.currentPlayer, gameController.die)
+  def bearIn(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>    
+    val move = BearInMove(gameController.currentPlayer, gameController.die)
     val result: Try[IGame] = gameController.put(move)
 
     result match {
       case Success(_) =>
-        val boardHtml = views.html.components.board(gameController.game).toString()
         Ok(Json.obj(
           "ok"            -> true,
-          "boardHtml"     -> boardHtml,
+          "boardHtml"     -> boardHtml.toString(),
           "currentPlayer" -> gameController.currentPlayer.toString,
           "dice"          -> Json.toJson(gameController.dice)
         ))

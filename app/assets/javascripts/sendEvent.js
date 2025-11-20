@@ -9,6 +9,35 @@ $(document).ready(function () {
     });
   }
 
+  function updateUI(data) {
+    if (!data) return;
+    if (data.boardHtml) {
+      $('#board-area').html(data.boardHtml);
+    }
+    if (data.currentPlayer) {
+      $('#current-player').text(data.currentPlayer);
+      $('#current-player-badge').text(data.currentPlayer + "'s turn");
+    }
+    if (data.dice && Array.isArray(data.dice)) {
+      var $ul = $('.dice-panel ul');
+      if ($ul.length) {
+        $ul.empty();
+        data.dice.forEach(function (d) {
+          var src = '/assets/images/dice-' + d + '.png';
+          var $li = $("<li class='list-inline-item' aria-label='Würfel'></li>");
+          $li.append(
+            "<img src='" +
+              src +
+              "' alt='Würfel mit Zahl " +
+              d +
+              "' class='dice-img'>"
+          );
+          $ul.append($li);
+        });
+      }
+    }
+  }
+
   // --- Toaster ---
   function showToast(message, level) {
     level = level || 'info';
@@ -124,8 +153,8 @@ $(document).ready(function () {
     $.ajax({
       url: "/move?from=" + currentSourcePoint + "&to=" + targetPoint,
       type: "GET",
-      success: function (boardHtml) {
-        $("#board-area").html(boardHtml);
+      success: function (data) {
+        updateUI(data);
         clearSelection();
         resetHintsState();
       },
@@ -155,14 +184,11 @@ $(document).ready(function () {
       return;
     }
 
-    var payload = JSON.stringify({ from: currentSourcePoint });
-
     $.ajax({
       url: "/api/hints?from=" + currentSourcePoint,
       method: "GET",
       dataType: "json"
     })
-
       .done(function (data) {
         console.log("hints response", data);
         if (data && data.ok && Array.isArray(data.destinations)) {
