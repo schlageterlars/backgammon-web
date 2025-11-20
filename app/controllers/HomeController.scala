@@ -26,6 +26,7 @@ import de.htwg.se.backgammon.model.base.Move
 import de.htwg.se.backgammon.controller.strategy.ValidateMoveStrategy
 import de.htwg.se.backgammon.model.IGame
 import de.htwg.se.backgammon.model.base.BearInMove
+import de.htwg.se.backgammon.model.base.Move
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -38,16 +39,13 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     Ok(views.html.index(gameController))
   }
 
-  def undo = Action {implicit request: Request[AnyContent] =>
-    gameController.undoAndPublish(gameController.undo)
-    Redirect(routes.HomeController.index())
+  def rules = Action {
+    Ok(views.html.rules())
   }
 
-  // AJAX endpoint for undo (returns JSON)
-  def apiUndo = Action { implicit request: Request[AnyContent] =>
+  def undo = Action { implicit request: Request[AnyContent] =>
     gameController.undoAndPublish(gameController.undo)
-    // Return updated board fragment and some basic state as JSON
-    val boardHtml = views.html.components.board(gameController).toString()
+
     Ok(Json.obj(
       "ok" -> true,
       "boardHtml" -> boardHtml,
@@ -56,9 +54,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     ))
   }
 
-  def rules = Action {
-    Ok(views.html.rules())
-  }
+  def boardHtml: String = views.html.components.board(gameController.game).toString()
 
   def setBoardSize(size: String) = Action { implicit request: Request[AnyContent] =>
     val game: Game = size match {
@@ -68,25 +64,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
       case _         => new Game(24, 15)
     }
 
-    // Use controller init to set the game (notify observers)
     gameController.init(game)
 
-    Redirect(routes.HomeController.index())
-      .flashing("success" -> s"Board size set to $size")
-  }
-
-  // AJAX version to set board size without a redirect
-  def apiSetBoardSize(size: String) = Action { implicit request: Request[AnyContent] =>
-    val game: Game = size match {
-      case "small"   => new Game(12, 10)
-      case "medium"  => new Game(16, 12)
-      case "classic" => new Game(24, 15)
-      case _         => new Game(24, 15)
-    }
-    // Use controller init to set the game (notify observers)
-    gameController.init(game)
-    // Return updated board fragment and basic state so client can update without reload
-    val boardHtml = views.html.components.board(gameController).toString()
     Ok(Json.obj(
       "success" -> true,
       "size" -> size,
@@ -109,11 +88,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
           val move = Move.create(gameController.game, gameController.currentPlayer, from, to)
           logger.info(s"Move created: $move from=$from to=$to")
           
-          // Use doAndPublish to properly execute the move with validation and observers
           gameController.doAndPublish(gameController.put, move)
           
           logger.info(s"Move succeeded")
-          val boardHtml = views.html.components.board(gameController).toString()
           Ok(Json.obj(
             "ok" -> true,
             "boardHtml" -> boardHtml,
@@ -130,10 +107,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     result
   }
 
-  // AJAX endpoint to get possible destinations for a given source point
-  // Request:  { "from": Int }
-  // Response: { "ok": true, "from": Int, "destinations": [Int, ...] }
-  def apiHints = Action(parse.json) { (request: Request[JsValue]) =>
+  def hints = Action(parse.json) { (request: Request[JsValue]) =>
     val js = request.body
     logger.info(s"apiHints called. body=${js.toString()}")
     val fromOpt: Option[Int] = (js \ "from").asOpt[Int]
@@ -146,7 +120,6 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
       case Some(from) if from >= 0 && from <= maxIndex =>
         val fromField = fields(from)
 
-        // Wenn das Startfeld leer ist oder nicht dem aktuellen Spieler gehört -> keine Hints
         if (fromField.isEmpty() || !fromField.isOccupiedBy(current)) {
           Seq.empty
         } else {
@@ -156,11 +129,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
             } else {
               val targetField = fields(to)
 
-              // Zielfeld ist von Gegner besetzt? Dann keinen Hint!
               if (!targetField.isEmpty() && !targetField.isOccupiedBy(current)) {
                 None
               } else {
-                // Validierung mit deiner bestehenden Strategie
                 val isValid = Try {
                   val move = Move.create(
                     gameController.game,
@@ -169,7 +140,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
                     to
                   )
                   val validator = ValidateMoveStrategy(gameController, move)
-                  validator.validate() // wirft Exception bei ungültigem Zug
+                  validator.validate() 
                 }.isSuccess
 
                 if (isValid) Some(to) else None
@@ -191,23 +162,19 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, v
     )
   }
 
-  // Request:  POST /api/bearIn
-  // Response: { ok: true, boardHtml, currentPlayer, dice } oder Fehler
-  def apiBearIn = Action { implicit request: Request[AnyContent] =>
+
+  def bearIn = Action { implicit request: Request[AnyContent] =>
     logger.info("apiBearIn called")
 
-    // Bear-In-Move mit aktuellem Spieler und aktuellem Würfel
     val move = BearInMove(
       gameController.currentPlayer,
       gameController.die
     )
 
-    // Optional: Vorvalidierung – aber checkMove läuft in put sowieso noch mal
     val result: Try[IGame] = gameController.put(move)
 
     result match {
       case Success(_) =>
-        val boardHtml = views.html.components.board(gameController).toString()
         Ok(
           Json.obj(
             "ok"            -> true,

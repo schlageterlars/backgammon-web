@@ -1,9 +1,9 @@
 @import de.htwg.se.backgammon.model.Player
-@(gameController: de.htwg.se.backgammon.controller.IController)
+@(game: de.htwg.se.backgammon.model.IGame)
 
 <div class="container my-5">
 
-  @defining(gameController.game.fields) { fields =>
+  @defining(game.fields) { fields =>
     @defining(fields.length / 2) { cols =>
       @defining(2) { rows =>
         @defining(1 / (cols.toDouble / rows) * 2) { aspect =>

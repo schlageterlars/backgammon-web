@@ -11,6 +11,7 @@ lazy val root = project
     libraryDependencies ++= Seq(
       guice,
       "backgammon"              %% "backgammon"         % "0.1.0-SNAPSHOT",
+      "org.playframework"       %% "play-json"          % "3.0.6",
       "org.scalatestplus.play"  %% "scalatestplus-play" % "7.0.2" % Test,
       "org.apache.commons" % "commons-text" % "1.12.0"
     )

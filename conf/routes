@@ -7,15 +7,15 @@
 GET     /                           controllers.HomeController.index()
 GET     /rules                      controllers.HomeController.rules
 GET     /undo                       controllers.HomeController.undo()
-GET     /setBoardSize               controllers.HomeController.setBoardSize(size: String)
 
 # AJAX API
-POST    /api/undo                   controllers.HomeController.apiUndo
-POST    /api/setBoardSize/:size     controllers.HomeController.apiSetBoardSize(size: String)
-POST    /api/move                   controllers.HomeController.apiMove
-POST    /api/hints                  controllers.HomeController.apiHints
-POST    /api/bearIn                 controllers.HomeController.apiBearIn
+POST    /api/undo                   controllers.HomeController.undo
+POST    /api/setBoardSize/:size     controllers.HomeController.setBoardSize(size: String)
+POST    /api/move                   controllers.HomeController.move
+POST    /api/hints                  controllers.HomeController.hints
+POST    /api/bearIn                 controllers.HomeController.bearIn
 
+GET     /move                       controllers.HomeController.move(from: String, to: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
