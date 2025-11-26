@@ -1,0 +1,211 @@
+@(lobbyId: String, username: String)(implicit request: play.api.mvc.RequestHeader)
+@import helper.CSRF 
+
+@main("Lobby") {
+  <head>
+  <meta name="csrf-token" content="@helper.CSRF.getToken.value">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .chat-container {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 300px;
+      max-height: 500px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      background-color: #f8f9fa;
+    }
+
+    .chat-header {
+      background-color: #0d6efd;
+      color: white;
+      padding: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input input {
+      flex: 1;
+      border: none;
+      padding: 10px;
+      outline: none;
+    }
+
+    .chat-input button {
+      border: none;
+      background-color: #0d6efd;
+      color: white;
+      padding: 0 15px;
+    }
+
+
+    .message {
+      font-family: monospace;
+      margin-bottom: 10px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      background-color: #e9ecef;
+    }
+
+    .message .timestamp {
+        font-size: 0.8em;
+        margin-bottom: 8px;
+    }
+
+    .message .user {
+      font-weight: bold;
+      color: #0d6efd;
+      margin-bottom: 3px;
+    }
+  </style>
+</head>
+<body>
+   
+<div id="badgeContainer" class="position-fixed top-0 start-0 m-2 d-flex flex-column align-items-start">
+  <span class="badge bg-secondary mb-1">Lobby: @lobbyId</span>
+  <span id="playerBadge" class="badge d-none"></span>
+</div>
+  <div id="game" class="m-3">
+
+  <div id="board-wrapper">
+    <main id="board-area">
+    </main>
+  </div>  
+  </div>
+
+<div class="chat-container">
+  <div class="chat-header">Chat</div>
+  <div class="chat-messages" id="messagesDiv"></div>
+  <div class="chat-input">
+    <input type="text" id="chatInput" placeholder="Type a message...">
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+  <script>
+
+    const ws = new WebSocket(`ws://localhost:9000/lobby/@lobbyId/ws?user=${encodeURIComponent("@username")}`);
+    
+    const messagesDiv = document.getElementById('messagesDiv');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    
+    ws.onopen = () => {
+      const p = document.createElement("p");
+      p.innerText = "Connected to lobby!";
+      messagesDiv.appendChild(p);
+    };
+
+    ws.onmessage = (msg) => {
+      console.log(msg);
+      let data;
+      try {
+        data = JSON.parse(msg.data);
+      } catch (e) {
+        data = { message: msg.data };
+      }
+
+      const timestamp = new Date(data.timestamp).toLocaleTimeString();
+      const type = data["type"]
+      data = data["data"]
+
+      if (type == "GameUpdate") {
+        const token = document.querySelector('meta[name="csrf-token"]').content;
+        fetch("/board/render", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Csrf-Token": token
+          },
+          body: JSON.stringify(data.game)
+        })
+        .then(res => res.text())
+        .then(html => {
+          $('#board-area').html(html);
+        });
+      }
+
+      if (type === "PlayerAssigned") {
+        const badge = document.getElementById("playerBadge");
+        badge.classList.remove("d-none");
+        badge.className = "badge";
+        if (data.color === "White") {
+            badge.classList.add("bg-light", "text-dark");
+            badge.innerText = "You are WHITE";
+        } else if (data.color === "Black") {
+            badge.classList.add("bg-dark", "text-light"); 
+            badge.innerText = "You are BLACK";
+        }
+
+        return; 
+      }
+
+      if (type == "ChatBroadcast") {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+
+        const timeSpan = document.createElement('div');
+        timeSpan.classList.add('timestamp');
+        timeSpan.innerText = timestamp;
+        messageDiv.appendChild(timeSpan);
+
+        if (data.user) {
+          const userSpan = document.createElement('span');
+          userSpan.classList.add('user');
+          userSpan.style.fontWeight = "bold";
+          userSpan.innerText = data.user + ": ";
+
+          const textSpan = document.createElement('span');
+          textSpan.innerText = data.text;
+
+          messageDiv.appendChild(userSpan);
+          messageDiv.appendChild(textSpan);
+        } else {
+          messageDiv.innerText = data.text;
+        }
+
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }
+    };
+
+    ws.onclose = () => {
+      const p = document.createElement("p");
+      p.innerText = "WebSocket closed.";
+      messagesDiv.appendChild(p);
+    };
+
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const input = document.getElementById("chatInput");
+      ws.send(JSON.stringify({ type: "ChatMessage", user: "@username", text: input.value }));
+      input.value = "";
+    });
+
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+      if(e.key === 'Enter') sendBtn.click();
+    });
+  </script>
+}
+<script defer src='@routes.Assets.versioned("javascripts/boardSize.js")'></script>
+<script defer src='@routes.Assets.versioned("javascripts/sendEvent.js")'></script>

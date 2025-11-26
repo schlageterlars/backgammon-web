@@ -1,0 +1,34 @@
+@(implicit request: play.api.mvc.RequestHeader)
+@import helper.CSRF
+
+@main("Lobby") {
+  <h1>Create Lobby</h1>
+
+  <input type="text" id="username" placeholder="Enter username">
+  <button id="createLobby">Create Lobby</button>
+
+  <script>
+    const csrfToken = '@CSRF.getToken.value';
+
+    document.getElementById("createLobby").addEventListener("click", async () => {
+      const username = document.getElementById("username").value;
+      if (!username) return alert("Enter a username");
+
+      const response = await fetch("/lobby", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Csrf-Token": csrfToken
+        },
+        body: new URLSearchParams({ username })
+      });
+
+      if (response.redirected) {
+        window.location.href = response.url; // Redirect to /lobby/lobbyId
+      } else {
+        const data = await response.text();
+        alert("Error: " + data);
+      }
+    });
+  </script>
+}

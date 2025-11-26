@@ -3,15 +3,9 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-# An example controller showing a sample home page
-GET     /                           controllers.HomeController.index()
-GET     /rules                      controllers.HomeController.rules
-GET     /undo                       controllers.HomeController.undo()
+GET     /                   controllers.HomeController.index
+POST    /lobby              controllers.HomeController.createLobby
+GET     /lobby/:lobbyId     controllers.HomeController.lobby(lobbyId: String)
 
-GET     /setBoardSize               controllers.HomeController.setBoardSize(size: String)
-GET     /move                       controllers.HomeController.move(from: String, to: String)
-GET     /api/hints                  controllers.HomeController.hints(from: Int)
-GET     /api/bearIn                 controllers.HomeController.bearIn()
-
-# Map static resources from the /public folder to the /assets URL path
+POST    /board/render       controllers.GameController.renderBoard()
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
