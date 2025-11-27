@@ -149,19 +149,11 @@ $(document).ready(function () {
     const targetPoint = $targetCell.data("point");
 
     console.log("Move attempt from: " + currentSourcePoint + " to: " + targetPoint);
-
-    $.ajax({
-      url: "/move?from=" + currentSourcePoint + "&to=" + targetPoint,
-      type: "GET",
-      success: function (data) {
-        updateUI(data);
-        clearSelection();
-        resetHintsState();
-      },
-      error: function () {
-        showToast("Fehler beim Verschieben.", "danger");
-      }
-    });
+    
+    ws.send(JSON.stringify({ type: "MoveMessage",   
+          from: String(currentSourcePoint),
+          to: String(targetPoint)
+      }));
   });
 
   // --- Hint / Glühbirne --

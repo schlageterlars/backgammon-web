@@ -85,7 +85,12 @@
 <div id="badgeContainer" class="position-fixed top-0 start-0 m-2 d-flex flex-column align-items-start">
   <span class="badge bg-secondary mb-1">Lobby: @lobbyId</span>
   <span id="playerBadge" class="badge d-none"></span>
-</div>
+
+    <div class="alert alert-info p-2 mb-0 mt-2 flex-shrink-0 dice-panel" role="alert">
+        <ul class="list-inline mb-0 d-inline">
+        </ul>
+    </div>
+  </div>
   <div id="game" class="m-3">
 
   <div id="board-wrapper">
@@ -102,110 +107,12 @@
     <button id="sendBtn">Send</button>
   </div>
 </div>
-
-  <script>
-
-    const ws = new WebSocket(`ws://localhost:9000/lobby/@lobbyId/ws?user=${encodeURIComponent("@username")}`);
-    
-    const messagesDiv = document.getElementById('messagesDiv');
-    const chatInput = document.getElementById('chatInput');
-    const sendBtn = document.getElementById('sendBtn');
-    
-    ws.onopen = () => {
-      const p = document.createElement("p");
-      p.innerText = "Connected to lobby!";
-      messagesDiv.appendChild(p);
-    };
-
-    ws.onmessage = (msg) => {
-      console.log(msg);
-      let data;
-      try {
-        data = JSON.parse(msg.data);
-      } catch (e) {
-        data = { message: msg.data };
-      }
-
-      const timestamp = new Date(data.timestamp).toLocaleTimeString();
-      const type = data["type"]
-      data = data["data"]
-
-      if (type == "GameUpdate") {
-        const token = document.querySelector('meta[name="csrf-token"]').content;
-        fetch("/board/render", {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Csrf-Token": token
-          },
-          body: JSON.stringify(data.game)
-        })
-        .then(res => res.text())
-        .then(html => {
-          $('#board-area').html(html);
-        });
-      }
-
-      if (type === "PlayerAssigned") {
-        const badge = document.getElementById("playerBadge");
-        badge.classList.remove("d-none");
-        badge.className = "badge";
-        if (data.color === "White") {
-            badge.classList.add("bg-light", "text-dark");
-            badge.innerText = "You are WHITE";
-        } else if (data.color === "Black") {
-            badge.classList.add("bg-dark", "text-light"); 
-            badge.innerText = "You are BLACK";
-        }
-
-        return; 
-      }
-
-      if (type == "ChatBroadcast") {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message');
-
-        const timeSpan = document.createElement('div');
-        timeSpan.classList.add('timestamp');
-        timeSpan.innerText = timestamp;
-        messageDiv.appendChild(timeSpan);
-
-        if (data.user) {
-          const userSpan = document.createElement('span');
-          userSpan.classList.add('user');
-          userSpan.style.fontWeight = "bold";
-          userSpan.innerText = data.user + ": ";
-
-          const textSpan = document.createElement('span');
-          textSpan.innerText = data.text;
-
-          messageDiv.appendChild(userSpan);
-          messageDiv.appendChild(textSpan);
-        } else {
-          messageDiv.innerText = data.text;
-        }
-
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-      }
-    };
-
-    ws.onclose = () => {
-      const p = document.createElement("p");
-      p.innerText = "WebSocket closed.";
-      messagesDiv.appendChild(p);
-    };
-
-    document.getElementById("sendBtn").addEventListener("click", () => {
-      const input = document.getElementById("chatInput");
-      ws.send(JSON.stringify({ type: "ChatMessage", user: "@username", text: input.value }));
-      input.value = "";
-    });
-
-    document.getElementById('chatInput').addEventListener('keypress', (e) => {
-      if(e.key === 'Enter') sendBtn.click();
-    });
-  </script>
 }
+
+<script>
+  const username = "@username";
+  const lobbyId = "@lobbyId";
+</script>
+<script defer src='@routes.Assets.versioned("javascripts/websocket.js")'></script>
 <script defer src='@routes.Assets.versioned("javascripts/boardSize.js")'></script>
 <script defer src='@routes.Assets.versioned("javascripts/sendEvent.js")'></script>
