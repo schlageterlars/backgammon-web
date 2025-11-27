@@ -1,0 +1,154 @@
+
+/* General Styles */
+body {
+    font-family: 'Orbitron', sans-serif;
+    background: radial-gradient(circle at top left, #0b0c1a, #000000 95%);
+    color: #e0e0ff;
+    margin: 0;
+    padding: 0;
+}
+
+.text-muted,
+.text-secondary {
+    color: saddlebrown !important;
+} 
+:root {
+    --bs-body-color: unset; /* removes the default Bootstrap body color */
+}
+
+/* Futuristic Header */
+.gamified-header {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3rem;
+    background: linear-gradient(90deg, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+/* Form Inputs */
+input.form-control {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #00ffff;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+input.form-control:focus {
+    border-color: #ff00ff;
+    box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff;
+    outline: none;
+}
+
+/* Cards */
+.card-lobby {
+    background: rgba(10, 10, 20, 0.85);
+    border-radius: 20px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), 0 0 40px rgba(255, 0, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-lobby:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.4), 0 0 60px rgba(255, 0, 255, 0.4);
+}
+
+/* Option Cards */
+.option-card {
+    background: rgba(20, 20, 40, 0.7);
+    border-radius: 15px;
+    border: 1px solid #00ffff;
+    color: #fff;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.option-card:hover {
+    box-shadow: 0 0 15px #00ffff, 0 0 30px #ff00ff;
+    transform: scale(1.05);
+}
+
+/* Selected Option Cards */
+input[name="boardSize"]:checked + .option-card,
+input[name="playerColor"]:checked + .option-card {
+    border: 2px solid #ff00ff;
+    box-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;
+}
+
+/* Checker Pieces */
+.checker-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ffff;
+    transition: all 0.3s ease;
+}
+
+.checker-white {
+    background: radial-gradient(circle at 30% 30%, #fff, #a0e0ff);
+    border: 1px solid #cfcfcf;
+}
+
+.checker-black {
+    background: radial-gradient(circle at 30% 30%, #111, #000);
+}
+
+.checker-random {
+    background: linear-gradient(90deg, #fff 50%, #000 50%);
+    border: 1px solid #777;
+}
+
+/* Buttons */
+button.btn, button.btn-outline-primary {
+    background: linear-gradient(135deg, #00ffff, #ff00ff);
+    color: #000;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+    transition: all 0.3s ease;
+}
+
+button.btn-outline-primary {
+    background: transparent;
+    border: 1px solid #00ffff;
+    color: #00ffff;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #00ffff, 0 0 40px #ff00ff;
+}
+
+/* Scope Radio Labels */
+.form-check-label {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-check-input:checked + .form-check-label {
+    color: #00ffff;
+}
+
+/* Starfield Background */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+background-color: #0a0a0a;
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+/* Misc small details */
+.muted-sm {
+    color: rgba(255, 255, 255, 0.6);
+}

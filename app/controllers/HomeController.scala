@@ -14,20 +14,38 @@ class HomeController @Inject()(cc: ControllerComponents, ws: WSClient)(implicit 
     Ok(views.html.home(using request))
   }
 
-  def createLobby = Action.async {  implicit request: Request[AnyContent] =>
-    val data = request.body.asFormUrlEncoded
-    val usernameOpt = data.flatMap(_.get("username").flatMap(_.headOption))
-
-    usernameOpt match {
+  def updateUsername() = Action { implicit request: Request[AnyContent]  =>
+    request.body.asFormUrlEncoded.flatMap(_.get("username").flatMap(_.headOption)) match {
       case Some(username) =>
-        ws.url("http://localhost:9000/lobby").post(Json.obj("user" -> username)).map { response =>
-          val lobbyId = (response.json \ "lobbyId").as[String]
-          // Redirect to lobby page with query param for username
-          Redirect(routes.HomeController.lobby(lobbyId)).withSession("username" -> username)
-        }
-
+        // Update session and return OK
+        Ok("Username updated").withSession(request.session + ("username" -> username))
       case None =>
-        Future.successful(BadRequest("Missing username"))
+        BadRequest("No username provided")
+    }
+  }
+
+  def createLobby: Action[AnyContent] = Action.async { implicit request =>
+    val data = request.body.asFormUrlEncoded
+    val boardSizeOpt = data.flatMap(_.get("boardSize").flatMap(_.headOption))
+    val scopeOpt = data.flatMap(_.get("scope").flatMap(_.headOption))
+    val colorDesicionOpt = data.flatMap(_.get("player").flatMap(_.headOption))
+
+    print(s"Create new lobby with ${data}")
+
+    (boardSizeOpt, scopeOpt, colorDesicionOpt) match {
+      case (Some(boardSize), Some(scope), Some(colorDecision)) =>
+        ws.url("http://localhost:9000/lobby")
+          .post(Json.obj(
+            "boardSize" -> boardSize,
+            "scope" -> scope,
+            "colorDesicion" -> colorDecision
+          )).map { response =>
+            val lobbyId = (response.json \ "lobbyId").as[String]
+            Redirect(routes.HomeController.lobby(lobbyId))
+          }
+
+      case _ =>
+        Future.successful(BadRequest("Missing username, board size, or scope"))
     }
   }
 

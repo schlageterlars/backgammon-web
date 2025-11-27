@@ -3,6 +3,8 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
+POST    /update-username    controllers.HomeController.updateUsername()
+
 GET     /                   controllers.HomeController.index
 POST    /lobby              controllers.HomeController.createLobby
 GET     /lobby/:lobbyId     controllers.HomeController.lobby(lobbyId: String)
