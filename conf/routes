@@ -3,9 +3,15 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-POST    /update-username    controllers.HomeController.updateUsername()
+GET   /csrf-token   controllers.HomeController.getCsrfToken()
 
-GET     /                   controllers.HomeController.index
+POST    /update-username    controllers.HomeController.updateUsername()
+GET     /get-username       controllers.HomeController.getUsername()
+
+
+GET     /get-lobby-count    controllers.HomeController.getLobbyCount()
+
+GET     /                   controllers.Assets.at(path="/ui", file="index.html")
 POST    /lobby              controllers.HomeController.createLobby
 GET     /lobby/:lobbyId     controllers.HomeController.lobby(lobbyId: String)
 

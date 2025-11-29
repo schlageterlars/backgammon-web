@@ -6,21 +6,39 @@ import play.api.libs.ws._
 import play.api.libs.json._
 import scala.concurrent.{ExecutionContext, Future}
 import play.filters.csrf.CSRFCheck
+import scala.util.Random
+import play.filters.csrf.CSRF
+
 
 @Singleton
 class HomeController @Inject()(cc: ControllerComponents, ws: WSClient)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   def index = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.home(using request))
+    Ok(views.html.index())
+  }
+
+  def getCsrfToken() = Action { implicit request: Request[AnyContent] =>
+    Ok(CSRF.getToken.get.value) 
+  }
+
+  def getLobbyCount() = Action { implicit request: Request[AnyContent] =>
+    val count = Random.nextInt(10)
+    Ok(count.toString)
   }
 
   def updateUsername() = Action { implicit request: Request[AnyContent]  =>
     request.body.asFormUrlEncoded.flatMap(_.get("username").flatMap(_.headOption)) match {
       case Some(username) =>
-        // Update session and return OK
         Ok("Username updated").withSession(request.session + ("username" -> username))
       case None =>
         BadRequest("No username provided")
+    }
+  }
+
+  def getUsername() = Action { implicit request: Request[AnyContent] =>
+    request.session.get("username") match {
+      case Some(username) => Ok(username)
+      case None           => Ok("") 
     }
   }
 
@@ -59,9 +77,9 @@ class HomeController @Inject()(cc: ControllerComponents, ws: WSClient)(implicit 
   def lobby(lobbyId: String) = Action { implicit request: Request[AnyContent] =>
     request.session.get("username") match {
       case Some(username) =>
-        Ok(views.html.lobby(lobbyId, username))
+        Ok(Json.obj("lobbyId" -> lobbyId, "username" -> username))
       case None =>
-        Redirect(routes.HomeController.index).flashing("error" -> "Missing username")
+        Forbidden(Json.obj("error" -> "Missing username"))
     }
   }
 }

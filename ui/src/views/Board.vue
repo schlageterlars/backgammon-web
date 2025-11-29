@@ -1,0 +1,230 @@
+<template>
+  <div class="container my-5">
+    <div 
+      class="d-grid mx-auto board rounded shadow-lg"
+      :style="{
+        '--cols': cols,
+        '--rows': rows,
+        '--aspect': aspect
+      }"
+    >
+      <div
+        v-for="(field, i) in board.fields"
+        :key="i"
+        :class="['cell', i >= cols ? 'bottom' : 'top', { selected: activeSource === i }]"
+        :data-point="i"
+        @click="onCellClick(i)"
+      >
+        <template v-if="field === 0">
+          <span class="text-white-50">–</span>
+        </template>
+
+        <template v-else>
+          <div
+            class="checker-stack"
+            :class="[getColorClass(field), i >= cols ? 'bottom' : 'top']"
+          >
+          <div
+            v-for="(n, idx) in Math.abs(field)"
+            :key="idx"
+            class="checker"
+            :class="[
+                getColorClass(field),
+                activeSource === i && activeCheckerIndex === idx ? 'active' : ''
+            ]"
+            @click.stop="onCheckerClick(i, idx)"
+          ></div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { ref, computed, defineProps } from 'vue'
+import type { BoardState } from '../utils/lobbyWebSocket'
+
+const props = defineProps<{
+  board: BoardState,
+  sendMove: (from: number, to: number) => void
+}>()
+
+const activeCheckerIndex = ref<number | null>(null)
+const activeSource = ref<number | null>(null)
+
+// Grid configuration
+const rows = 2
+const cols = computed(() => props.board.fields.length / rows)
+const aspect = computed(() => 1 / (cols.value / rows) * 2)
+
+const getColorClass = (field: number) => {
+  if (field > 0) return 'white'   
+  if (field < 0) return 'black'  
+  return 'empty'
+}
+
+function onCheckerClick(point: number, checkerIndex: number) {
+  if (activeSource.value === point && activeCheckerIndex.value === checkerIndex) {
+    activeSource.value = null
+    activeCheckerIndex.value = null
+    return
+  }
+
+  activeSource.value = point
+  activeCheckerIndex.value = checkerIndex
+}
+
+function onCellClick(point: number) {
+  if (activeSource.value === null) return
+
+  const from = activeSource.value
+  const to = point
+
+  props.sendMove(from, to)
+
+  activeSource.value = null
+}
+</script>
+
+<style scoped>
+#game .board {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border-width: 20px;
+  border-style: solid;
+  border-image: url("https://opengameart.org/sites/default/files/oga-textures/125660/wood%2017%20-%20256x256.png") 20 round;
+}
+
+#game .board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--rows), 1fr);
+  grid-template-rows: repeat(var(--cols), 1fr);
+  background: #ADE8F4;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(0,0,0,0.05);
+  overflow: hidden;
+  transform: scale(var(--board-scale));
+  transform-origin: top center;
+}
+
+#game .board::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  background-color: #023E8A;
+  z-index: 0;
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.35);
+}
+
+/* Zellen/Dreiecke */
+#game .cell {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 1; /* mobil */
+  display: flex;
+  align-items: center;       /* zentriert den „–“ Platzhalter */
+  justify-content: center;
+  z-index: 1;                /* über Mittelleiste */
+}
+
+#game .cell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+  background: #ffffff;
+  transition: clip-path .25s ease;
+  z-index: 0;
+  box-shadow:
+    inset 0 4px 6px rgba(0,0,0,0.25),
+    inset -2px 0 4px rgba(0,0,0,0.15),
+    inset 2px 0 4px rgba(0,0,0,0.15);
+  border-radius: 2px;
+}
+
+#game .cell:nth-child(even)::before { background: #023E8A; }
+
+/* Desktop: 12 / 12 */
+@media (min-width: 768px) {
+  #game .board {
+    grid-template-columns: repeat(var(--cols), 1fr);
+    grid-template-rows: repeat(var(--rows), 1fr);
+  }
+  #game .cell { aspect-ratio: var(--aspect); }
+  #game .cell::before { clip-path: polygon(50% 100%, 0 0, 100% 0); }
+  #game .cell.bottom::before {
+    transform: rotate(180deg);
+  }
+}
+
+/* --- Checker & Stacks --- */
+#game .checker-stack {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 8px;
+  bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+}
+#game .checker-stack.top    { justify-content: flex-start; }
+#game .checker-stack.bottom { justify-content: flex-end; }
+#game .checker-stack.empty  { color: #9ca3af; }
+
+#game .checker {
+  width: var(--checker-size);
+  height: var(--checker-size);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,0.25),
+    inset 0 -2px 4px rgba(0,0,0,0.45),
+    0 2px 3px rgba(0,0,0,0.5);
+  z-index: 2;
+}
+
+.player-turn-shadow {
+    box-shadow: 0 0 12px 4px rgba(255, 255, 0, 0.7);
+    transition: box-shadow 0.3s ease;
+}
+
+#game .checker.black {
+  background: radial-gradient(circle at 30% 30%, #444, #000);
+  color: #fff;
+}
+#game .checker.white {
+  background: radial-gradient(circle at 30% 30%, #fff, #cfcfcf);
+  border: 1px solid #b5b5b5;
+  color: #0b0b0b;
+}
+
+#game.active-move {
+  cursor: grab;
+}
+
+#game .checker.active {
+  outline: 4px solid yellow; 
+  outline-offset: -2px;
+  box-shadow: 
+    0 0 10px 5px rgba(255, 255, 0, 0.7), /* Yellow glow */
+    inset 0 2px 4px rgba(255,255,255,0.25),
+    inset 0 -2px 4px rgba(0,0,0,0.45),
+    0 2px 3px rgba(0,0,0,0.5);
+}
+
+/* --- Sonstiges --- */
+#game .pip {
+  width: 22px; height: 22px; border-radius: 999px;
+  display: grid; place-items: center; font-weight: 600;
+  box-shadow: inset 0 2px 2px rgba(0,0,0,0.35), 0 1px 1px rgba(0,0,0,0.25);
+}
+</style>
