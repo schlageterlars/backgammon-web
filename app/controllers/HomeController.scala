@@ -39,13 +39,20 @@ class HomeController @Inject()(cc: ControllerComponents, ws: WSClient)(implicit 
             "boardSize" -> boardSize,
             "scope" -> scope,
             "colorDesicion" -> colorDecision
-          )).map { response =>
+          ))
+          .map { response =>
             val lobbyId = (response.json \ "lobbyId").as[String]
             Redirect(routes.HomeController.lobby(lobbyId))
           }
+          .recover {
+            case _: java.net.ConnectException =>
+              BadRequest("Server is not reachable")
+            case ex =>
+              InternalServerError(s"Unexpected error: ${ex.getMessage}")
+          }
 
       case _ =>
-        Future.successful(BadRequest("Missing username, board size, or scope"))
+        Future.successful(BadRequest("Missing board size, scope, or color decision"))
     }
   }
 

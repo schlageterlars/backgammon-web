@@ -1,74 +1,100 @@
 @(implicit request: play.api.mvc.RequestHeader)
 @import helper.CSRF
 
-@main("Lobby") {
-
-  <style>
-
-    .checker-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-}
-
-/* White piece */
-.checker-white {
-  background: radial-gradient(circle at 30% 30%, #fff, #cfcfcf);
-  border: 1px solid #b5b5b5;
-}
-
-/* Black piece */
-.checker-black {
-  background: radial-gradient(circle at 30% 30%, #444, #000);
-}
-
-/* Half-and-half random piece */
-.checker-random {
-  background: linear-gradient(90deg,
-      #fff 0%, #fff 50%, 
-      #000 50%, #000 100%
-  );
-  border: 1px solid #777;
-}
-
-
-.option-card {
-  border: 1px solid;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-/* Selected card (radio checked) */
-input[name="boardSize"]:checked + .option-card {
-  border: 2px solid var(--bs-primary);
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
-}
-input[name="playerColor"]:checked + .option-card {
-  border: 2px solid var(--bs-primary);
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
-}
-
-.gamified-header {
-  font-family: 'Orbitron', sans-serif; /* futuristic font */
-  font-size: 3rem;
-  color: var(--bs-primary);
-  background: linear-gradient(90deg, var(--bs-primary), #3a0ca3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 2px;
-  position: relative;
-  display: inline-block;
-}
-
-  </style>
+@main("Lobby") {  
+</div>
   <main class="container py-5">
 
     <div class="text-center my-4">
-  <h1 class="gamified-header">
-    Backgammon
-  </h1>
-</div>
 
+  <div class="content">
+		<h2>BACKGAMMON</h2>
+	</div>
+
+<div class="fishing-container">
+  <div class="rod">
+    <div class="line">
+      <div class="fish">
+
+<svg viewBox="0 0 64 32" width="168" height="10 4" xmlns="http://www.w3.org/2000/svg">
+  <!-- bottom page -->
+  <polygon points="6,8 58,8 56,26 8,26" fill="#D2B48C" stroke="#A0522D" stroke-width="0.5"/>
+
+  <!-- top page slightly curled -->
+  <path d="M6,8 Q7,6 58,8 Q59,10 60,10 L56,26 Q55,28 8,26 Q7,24 6,8 Z" fill="#F5DEB3" stroke="#A0522D" stroke-width="0.5"/>
+
+  <!-- fold lines for texture -->
+  <line x1="10" y1="10" x2="54" y2="11" stroke="#C8A165" stroke-width="0.3"/>
+  <line x1="12" y1="14" x2="56" y2="15" stroke="#C8A165" stroke-width="0.3"/>
+  <line x1="8" y1="18" x2="50" y2="19" stroke="#C8A165" stroke-width="0.3"/>
+  <line x1="14" y1="22" x2="54" y2="23" stroke="#C8A165" stroke-width="0.3"/>
+
+  <!-- small creases / worn edges -->
+  <line x1="7" y1="9" x2="8" y2="11" stroke="#C8A165" stroke-width="0.2"/>
+  <line x1="57" y1="9" x2="58" y2="11" stroke="#C8A165" stroke-width="0.2"/>
+  <line x1="10" y1="25" x2="12" y2="26" stroke="#C8A165" stroke-width="0.2"/>
+  <line x1="52" y1="24" x2="54" y2="25" stroke="#C8A165" stroke-width="0.2"/>
+
+  <!-- centered label -->
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#5A2E0B" font-size="6" font-family="Orbitron" font-weight="bold">Rules</text>
+</svg>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+
+/* Rod */
+.rod {
+  position: absolute;
+  top: 0;
+  left: 10%;
+  width: 6px;
+  height: 100px;
+  background: #654321; /* brown rod */
+  transform-origin: top center;
+  animation: swing 2s ease-in-out infinite alternate;
+}
+
+/* Line */
+.line {
+  position: absolute;
+  top: 100px; /* rod height */
+  left: 10%;
+  width: 2px;
+  height: 100px; /* length of line */
+  background: #222;
+  transform: translateX(-10%);
+  transform-origin: top center;
+}
+
+.fish {
+  position: absolute;
+  cursor: pointer;
+  top: 200%;
+  transform: translateX(-50%) rotate(-90deg); /* Mund zur Schnur */
+  transform-origin: top left; /* Drehpunkt oben (Mund hängt an der Schnur) */
+  animation: bob 2s ease-in-out infinite alternate;
+}
+
+/* Optional: leichtes Pendeln beim Schwingen */
+@@keyframes bob {
+  0% { transform: translateX(-50%) rotate(-70deg) translateY(0); }
+  25% { transform: translateX(-40%) rotate(-80deg) translateY(2px); }
+  50% { transform: translateX(-25%) rotate(-90deg) translateY(6px); }
+  75% { transform: translateX(-15%) rotate(-100deg) translateY(6px); }
+  100% { transform: translateX(-20%) rotate(-90deg) translateY(0); }
+}
+/* Rod swing animation */
+@@keyframes swing {
+  0% { transform: rotate(-10deg); }
+  50% { transform: rotate(10deg); }
+  100% { transform: rotate(-10deg); }
+}
+</style>
+</div>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/weltall.css")">
 
 <div class="row justify-content-center mb-4">
   <div class="col-12 col-md-10 col-lg-8">
@@ -78,9 +104,30 @@ input[name="playerColor"]:checked + .option-card {
   </div>
 </div>
 
-
-
 <script>
+$(function() {
+  function updateLobbyButton() {
+    if ($('#scopePublic').is(':checked')) {
+      // Public selected → show count and Quick Join
+      $('#openLobbyCount').show();
+      $('#createLobby').text('Quick Join');
+
+      // Optional: dynamically update count
+      // $('#openLobbyCount').text('5 open lobbies');
+    } else {
+      // Private selected → hide count and change button
+      $('#openLobbyCount').hide();
+      $('#createLobby').text('Create Lobby');
+    }
+  }
+
+  // Run on page load
+  updateLobbyButton();
+
+  // Listen for changes
+  $('input[name="scope"]').on('change', updateLobbyButton);
+});
+
 $(document).ready(function() {
   const csrfToken = '@CSRF.getToken.value';
 
@@ -127,10 +174,10 @@ $(document).ready(function() {
       });
 
       if (response.redirected) {
-        window.location.href = response.url; // Redirect to /lobby/lobbyId
+        window.location.href = response.url + "?state=created";; // Redirect to /lobby/lobbyId
       } else {
         const data = await response.text();
-        alert("Error: " + data);
+        showToast(data, "danger");
       }
     });
 });
@@ -253,8 +300,12 @@ $(document).ready(function() {
 
 
         <!-- Create Button -->
-        <div class="col-12 d-flex justify-content-end">
-          <button id="createLobby" type="button" class="btn btn-primary">Create Lobby</button>
+        <div class="col-12 d-flex justify-content-end align-items-center gap-2">
+          <span id="openLobbyCount" class="text-muted small me-4">0 open lobbies</span>
+
+          <button id="createLobby" type="button" class="btn btn-primary">
+            Quick Join
+          </button>
         </div>
 
       </form>
@@ -283,7 +334,7 @@ $(document).ready(function() {
         <!-- Join Button -->
         <div class="col-12 d-flex justify-content-end">
           <button id="joinLobby" type="button" class="btn btn-outline-primary">
-            Join Lobby
+            Start Match
           </button>
         </div>
 
@@ -293,9 +344,11 @@ $(document).ready(function() {
   </div>
 
 </div>
-
-
-
-
 </main>
+
+<div class="wave wave-1"></div>
+<div class="wave wave-2"></div>
+<div class="wave wave-3"></div>
+
+
 }
