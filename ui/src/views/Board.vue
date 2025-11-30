@@ -43,7 +43,7 @@
 
 
 <script lang="ts" setup>
-import { ref, computed, defineProps } from 'vue'
+import { ref, computed, defineProps, onMounted, onUnmounted } from 'vue'
 import type { BoardState } from '../utils/lobbyWebSocket'
 
 const props = defineProps<{
@@ -51,10 +51,32 @@ const props = defineProps<{
   sendMove: (from: number, to: number) => void
 }>()
 
+const windowWidth = ref(window.innerWidth);
+
+function handleResize() {
+  windowWidth.value = window.innerWidth;
+}
+
+onMounted(() => window.addEventListener('resize', handleResize));
+onUnmounted(() => window.removeEventListener('resize', handleResize));
+
 
 const half = computed(() => Math.floor(props.board.fields.length / 2))
 
 const boardPoints = computed(() => {
+  const width = windowWidth.value;
+  const fields = props.board.fields;
+  const len = fields.length;
+
+  if (width < 768) {
+    return Array.from({ length: Math.ceil(len / 2) })
+        .flatMap((_, i) => {
+        const start = { field: fields[i], originalIndex: i };
+        const end = i !== len - 1 - i ? { field: fields[len - 1 - i], originalIndex: len - 1 - i } : [];
+        return [start, end].flat();
+    });
+  }
+
   const topRow = props.board.fields
     .slice(half.value)
     .map((field, idx) => ({
@@ -130,16 +152,33 @@ function onCellClick(point: number) {
   transform-origin: top center;
 }
 
-#game .board::after {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  background-color: #023E8A;
-  z-index: 0;
-  border-radius: 2px;
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.35);
+@media (min-width: 768px) {
+    #game .board::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    background: url("https://opengameart.org/sites/default/files/oga-textures/125660/wood%2017%20-%20256x256.png") round;
+    z-index: 100;
+    border-radius: 2px;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.35);
+    }
+}
+
+@media (max-width: 767px) {
+    #game .board::before {
+    content: "";
+    position: absolute;
+    inset: 50% auto auto 0; /* vertically centered */
+    transform: translateY(-50%);
+    height: 15px;             /* thickness of the line */
+    width: 100%;             /* span entire board horizontally */
+    background: url("https://opengameart.org/sites/default/files/oga-textures/125660/wood%2017%20-%20256x256.png") round;
+    z-index: 100;
+    border-radius: 2px;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.35);
+    }
 }
 
 /* Zellen/Dreiecke */
@@ -170,6 +209,12 @@ function onCellClick(point: number) {
 
 #game .cell:nth-child(even)::before { background: #023E8A; }
 
+@media (max-width: 767px) {
+  #game .cell:nth-child(odd)::before {
+    transform: rotate(180deg);
+  }
+}
+
 /* Desktop: 12 / 12 */
 @media (min-width: 768px) {
   #game .board {
@@ -177,9 +222,21 @@ function onCellClick(point: number) {
     grid-template-rows: repeat(var(--rows), 1fr);
   }
   #game .cell { aspect-ratio: var(--aspect); }
-  #game .cell::before { clip-path: polygon(50% 100%, 0 0, 100% 0); }
+  #game .cell::before { 
+    clip-path: polygon(50% 100%, 0 0, 100% 0); 
+    transform: rotate(0deg); /* reset default */
+  }
+
+  #game .cell::before {
+    transform: rotate(0deg);
+  }
+
   #game .cell.bottom::before {
     transform: rotate(180deg);
+  }
+
+  #game .checker-stack {
+    flex-direction: column !important;
   }
 }
 
@@ -191,11 +248,12 @@ function onCellClick(point: number) {
   top: 8px;
   bottom: 8px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   gap: 6px;
   z-index: 2;
 }
+
 #game .checker-stack.top    { justify-content: flex-start; }
 #game .checker-stack.bottom { justify-content: flex-end; }
 #game .checker-stack.empty  { color: #9ca3af; }
@@ -242,12 +300,5 @@ function onCellClick(point: number) {
     inset 0 2px 4px rgba(255,255,255,0.25),
     inset 0 -2px 4px rgba(0,0,0,0.45),
     0 2px 3px rgba(0,0,0,0.5);
-}
-
-/* --- Sonstiges --- */
-#game .pip {
-  width: 22px; height: 22px; border-radius: 999px;
-  display: grid; place-items: center; font-weight: 600;
-  box-shadow: inset 0 2px 2px rgba(0,0,0,0.35), 0 1px 1px rgba(0,0,0,0.25);
 }
 </style>
