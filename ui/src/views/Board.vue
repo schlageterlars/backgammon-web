@@ -9,37 +9,38 @@
       }"
     >
       <div
-        v-for="(field, i) in board.fields"
+        v-for="(point, i) in boardPoints"
         :key="i"
-        :class="['cell', i >= cols ? 'bottom' : 'top', { selected: activeSource === i }]"
-        :data-point="i"
-        @click="onCellClick(i)"
+        :class="['cell', i >= half ? 'bottom' : 'top', { selected: activeSource === point.originalIndex }]"
+        :data-point="point.originalIndex"
+        @click="onCellClick(point.originalIndex)"
       >
-        <template v-if="field === 0">
+        <template v-if="point.field === 0">
           <span class="text-white-50">–</span>
         </template>
 
         <template v-else>
           <div
             class="checker-stack"
-            :class="[getColorClass(field), i >= cols ? 'bottom' : 'top']"
+            :class="[getColorClass(point.field), i >= half ? 'bottom' : 'top']"
           >
-          <div
-            v-for="(n, idx) in Math.abs(field)"
-            :key="idx"
-            class="checker"
-            :class="[
-                getColorClass(field),
-                activeSource === i && activeCheckerIndex === idx ? 'active' : ''
-            ]"
-            @click.stop="onCheckerClick(i, idx)"
-          ></div>
+            <div
+              v-for="(n, idx) in Math.abs(point.field)"
+              :key="idx"
+              class="checker"
+              :class="[
+                getColorClass(point.field),
+                activeSource === point.originalIndex && activeCheckerIndex === idx ? 'active' : ''
+              ]"
+              @click.stop="onCheckerClick(point.originalIndex, idx)"
+            ></div>
           </div>
         </template>
       </div>
     </div>
   </div>
 </template>
+
 
 <script lang="ts" setup>
 import { ref, computed, defineProps } from 'vue'
@@ -49,6 +50,28 @@ const props = defineProps<{
   board: BoardState,
   sendMove: (from: number, to: number) => void
 }>()
+
+
+const half = computed(() => Math.floor(props.board.fields.length / 2))
+
+const boardPoints = computed(() => {
+  const topRow = props.board.fields
+    .slice(half.value)
+    .map((field, idx) => ({
+      field,
+      originalIndex: half.value + idx
+    }))
+
+  const bottomRow = props.board.fields
+    .slice(0, half.value)
+    .map((field, idx) => ({
+      field,
+      originalIndex: idx
+    }))
+    .reverse()
+
+  return [...topRow, ...bottomRow]
+})
 
 const activeCheckerIndex = ref<number | null>(null)
 const activeSource = ref<number | null>(null)

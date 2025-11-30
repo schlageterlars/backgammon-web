@@ -176,47 +176,27 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { showToast } from '@/utils/toast';
-
+import { useApi } from '@/utils/useApi'
 
 
 const router = useRouter()
 
 // reactive state
-const username = ref('')
 const boardSize = ref('Classic')
 const scope = ref('Public')
 const playerColor = ref('White')
-const openLobbyCount = ref(0)
-const csrfToken = ref('')
 
-async function fetchCsrfToken() {
-  try {
-    const res = await axios.get('/csrf-token')
-    csrfToken.value = res.data
-  } catch (err) {
-    console.error(err)
-  }
-}
+const {
+  username,
+  openLobbyCount,
+  csrfToken,
 
-async function fetchLobbyCount() {
-  try {
-    const res = await axios.get('/get-lobby-count')
-    openLobbyCount.value = parseInt(res.data)
-  } catch (err) {
-    console.error(err)
-  }
-}
+  fetchCsrfToken,
+  fetchUsername,
+  fetchLobbyCount,
 
-async function fetchUsername() {
-  try {
-    const res = await axios.get('/get-username') 
-    if (res.data) {
-      username.value = res.data
-    }
-  } catch (err) {
-    console.error('Failed to load username', err)
-  }
-}
+  updateUsername,
+} = useApi()
 
 let intervalId: number
 
@@ -232,12 +212,10 @@ onUnmounted(() => {
 
 // Watch username changes and save to session
 watch(username, async (newVal) => {
+  if (!newVal) return
+
   try {
-    await fetchCsrfToken()
-    await axios.post('/update-username',
-    new URLSearchParams({ username: username.value }),
-    { headers: { 'Csrf-Token': csrfToken.value } }
-    )
+    await updateUsername(newVal)
     console.log('Username saved to session')
   } catch (err) {
     console.error('Failed to save username', err)
