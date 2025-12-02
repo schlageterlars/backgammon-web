@@ -96,7 +96,7 @@ export default defineComponent({
 }
 
 .chat-header {
-  background-color: #0d6efd;
+  background: radial-gradient(circle at top left, #001e3c, #000814 95%);
   color: white;
   padding: 10px;
   font-weight: bold;

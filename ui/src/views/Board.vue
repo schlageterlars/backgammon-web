@@ -1,13 +1,17 @@
 <template>
-  <div class="container my-5">
-    <div 
-      class="d-grid mx-auto board rounded shadow-lg"
-      :style="{
-        '--cols': cols,
-        '--rows': rows,
-        '--aspect': aspect
-      }"
-    >
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+  <div 
+    class="d-grid board rounded shadow-lg"
+    :style="{
+      '--cols': cols,
+      '--rows': rows,
+      '--aspect': aspect,
+      'max-width': '90vw',       /* scale down on small screens */
+      'max-height': '90vh',      /* scale down vertically */
+      'width': 'min(90vw, 1200px)',
+      'height': 'auto'
+    }"
+  >
       <div
         v-for="(point, i) in boardPoints"
         :key="i"

@@ -1,5 +1,5 @@
 // useLobbyWebSocket.ts
-import { ref, reactive, onMounted, onBeforeUnmount } from "vue";
+import { ref, reactive, onMounted, onBeforeUnmount, type Ref, watch } from "vue";
 
 export interface ChatMessage {
     type: string;
@@ -20,19 +20,30 @@ export interface GameState {
     currentPlayer?: string;
 }
 
-export function useLobbyWebSocket(lobbyId: string, username: string) {
+export interface User {
+    name: string;
+    connected: boolean;
+}
+
+export interface LobbyState {
+    white?: User;
+    black?: User;
+    gameStarted: boolean;
+}
+
+export function useLobbyWebSocket(lobbyId: string, username: Ref<string | null>) {
     const ws = ref<WebSocket | null>(null);
     const messages = reactive<ChatMessage[]>([]);
     const player = ref<string>("");
     const connected = ref(false);
     const gameState = ref<GameState | null>(null);
+    const lobbyState = ref<LobbyState | null>(null);
 
     const sendMessage = (text: string) => {
         if (ws.value && text.trim() !== "") {
             ws.value.send(
                 JSON.stringify({
                     type: "ChatMessage",
-                    user: username,
                     text
                 })
             );
@@ -51,9 +62,20 @@ export function useLobbyWebSocket(lobbyId: string, username: string) {
         }
     };
 
+    const close = () => {
+        console.log(`close ${ws}`)
+        if (ws.value) {
+            ws.value.close() 
+            ws.value = null
+        }   
+    }
+
     const connect = () => {
+        if (!username.value) return 
+        if (ws.value) return
+
         ws.value = new WebSocket(
-            `ws://localhost:9000/lobby/${lobbyId}/ws?user=${encodeURIComponent(username)}`
+            `ws://localhost:9000/lobby/${lobbyId}/ws?user=${encodeURIComponent(username.value)}`
         );
 
         ws.value.onopen = () => {
@@ -82,9 +104,26 @@ export function useLobbyWebSocket(lobbyId: string, username: string) {
                 };
             }
 
+            // Handle LobbyUpdate
+            if (type === "LobbyUpdate") {
+                lobbyState.value = {
+                    white: content.white,
+                    black: content.black,
+                    gameStarted: content.gameStarted
+                };
+            }
+
             // Handle PlayerAssigned
             if (type === "PlayerAssigned") {
                 player.value = content.color;
+            }
+
+            if (type == "ServerInfo") {
+                messages.push({
+                    type: "system",
+                    text: content.text,
+                    timestamp
+                });
             }
 
             // Handle ChatBroadcast
@@ -104,7 +143,9 @@ export function useLobbyWebSocket(lobbyId: string, username: string) {
         };
     };
 
-    onMounted(connect);
+    watch(username, (newName) => {
+        if (newName) connect()
+    }, { immediate: true })
 
     onBeforeUnmount(() => {
         ws.value?.close();
@@ -116,7 +157,9 @@ export function useLobbyWebSocket(lobbyId: string, username: string) {
         player,
         connected,
         gameState,
+        lobbyState,
         sendMessage,
-        sendMove
+        sendMove,
+        close
     };
 }

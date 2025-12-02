@@ -13,10 +13,6 @@ import play.filters.csrf.CSRF
 @Singleton
 class HomeController @Inject()(cc: ControllerComponents, ws: WSClient)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
-  def index = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index())
-  }
-
   def getCsrfToken() = Action { implicit request: Request[AnyContent] =>
     Ok(CSRF.getToken.get.value) 
   }

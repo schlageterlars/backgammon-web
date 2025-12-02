@@ -1,15 +1,14 @@
 <template>
+    <div>
   <div class="lobby">
-    <button class="leave-btn" @click="leaveLobby">
-        ✖
-    </button>
+  <StatusPanel
+    :lobbyId="lobbyId"
+    :state="lobbyState"
+    @leave="leaveLobby"
+  />
     <chat-window :messages="messages" @sendMessage="sendMessage" />
-    <div v-if="player" class="badge" :class="player === 'White' ? 'bg-light text-dark' : 'bg-dark text-light'">
-      You are {{ player.toUpperCase() }}
-    </div>
-
     <div v-if="gameState">
-      <div id="game" class="m-3">
+      <div id="game">
         <Board v-if="gameState.game" :board="gameState.game" :send-move="sendMove"/>
         </div>
       <div v-if="gameState.dice && gameState.dice.length">
@@ -18,11 +17,9 @@
           <li v-for="(d, i) in gameState.dice" :key="i">{{ d }}</li>
         </ul>
       </div>
-      <div>
-        <strong>Current Player:</strong> {{ gameState.currentPlayer }}
-      </div>
     </div>
   </div>
+</div>
 </template>
 
 <script lang="ts" setup>
@@ -31,30 +28,39 @@ import ChatWindow from "./ChatWindow.vue";
 import Board from './Board.vue' 
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted } from 'vue'
+import { useApi } from '@/utils/useApi'
+import StatusPanel from "./StatusPanel.vue";
+
 
 const route = useRoute();
 const lobbyId = route.params.id as string;
 
-onMounted(() => {
+const {
+username,
+  fetchUsername,
+} = useApi()
+
+onMounted(async () => {
   console.log('Lobby ID:', lobbyId)
+  fetchUsername()
 })
 
-const username = "player1";
-
 // Call composable
-const { messages, player, gameState, connected, sendMessage, sendMove } =
+const { messages, player, gameState, lobbyState, connected, sendMessage, sendMove, close } =
   useLobbyWebSocket(lobbyId, username);
 
 const board: BoardState | null = gameState.game
 
 const router = useRouter()
 function leaveLobby() {
-  router.push("/")
+  close()
+  router.push('/')
 }
 </script>
 
 
 <style scoped>
+
 .leave-btn {
   position: absolute;
   top: 16px;
@@ -79,7 +85,7 @@ function leaveLobby() {
 .lobby {
   position: relative;
   height: 100vh;
-background: linear-gradient(
+  background: linear-gradient(
   135deg,
   #f0e4c2 0%,
   #e3d2a3 25%,
@@ -87,8 +93,6 @@ background: linear-gradient(
   #c9a971 75%,
   #b8925b 100%
 );
-
-  overflow: hidden; 
 }
 
 /* Noise layer */
