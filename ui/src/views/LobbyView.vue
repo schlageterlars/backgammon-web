@@ -10,12 +10,7 @@
     <div v-if="gameState">
       <div id="game">
         <Board v-if="gameState.game" :board="gameState.game" :send-move="sendMove"/>
-        </div>
-      <div v-if="gameState.dice && gameState.dice.length">
-        <h4>Dice:</h4>
-        <ul class="dice-list">
-          <li v-for="(d, i) in gameState.dice" :key="i">{{ d }}</li>
-        </ul>
+        <Dice v-if="gameState.dice" :dice="gameState.dice" />
       </div>
     </div>
   </div>
@@ -26,6 +21,7 @@
 import { useLobbyWebSocket, BoardState } from '../utils/lobbyWebSocket';
 import ChatWindow from "./ChatWindow.vue";
 import Board from './Board.vue' 
+import Dice from '../components/Dice.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import { useApi } from '@/utils/useApi'
@@ -106,10 +102,8 @@ function leaveLobby() {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 200px 200px;
 }
-.dice-list {
-  display: flex;
-  gap: 8px;
-  list-style: none;
-  padding: 0;
+
+#game {
+  position: relative;
 }
 </style>
