@@ -90,13 +90,20 @@ export default defineComponent({
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   overflow: hidden;
-  background-color: #f8f9fa;
+  background-color: var(--chat-background);
+  border: 1px solid var(--chat-border);
   z-index: 1000;
-  color: grey !important;
+  color: var(--text-color);
+}
+
+[data-theme="classic-wood"] .chat-container {
+  background-color: #f8f9fa;
+  border: none;
+  color: grey;
 }
 
 .chat-header {
-  background: radial-gradient(circle at top left, #001e3c, #000814 95%);
+  background: var(--button-primary);
   color: white;
   padding: 10px;
   font-weight: bold;

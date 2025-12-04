@@ -141,7 +141,7 @@ function onCellClick(point: number) {
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   border-width: 20px;
   border-style: solid;
-  border-image: url("https://opengameart.org/sites/default/files/oga-textures/125660/wood%2017%20-%20256x256.png") 20 round;
+  border-image: var(--board-border-image, none) 20 round;
 }
 
 #game .board {
@@ -149,7 +149,7 @@ function onCellClick(point: number) {
   display: grid;
   grid-template-columns: repeat(var(--rows), 1fr);
   grid-template-rows: repeat(var(--cols), 1fr);
-  background: #ADE8F4;
+  background: var(--board-background);
   box-shadow: 0 12px 40px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(0,0,0,0.05);
   overflow: hidden;
   transform: scale(var(--board-scale));
@@ -163,7 +163,7 @@ function onCellClick(point: number) {
     inset: 0 auto 0 50%;
     transform: translateX(-50%);
     width: 15px;
-    background: url("https://opengameart.org/sites/default/files/oga-textures/125660/wood%2017%20-%20256x256.png") round;
+    background: var(--board-bar-background, transparent) round;
     z-index: 100;
     border-radius: 2px;
     box-shadow: inset 0 0 6px rgba(0,0,0,0.35);
@@ -178,7 +178,7 @@ function onCellClick(point: number) {
     transform: translateY(-50%);
     height: 15px;             /* thickness of the line */
     width: 100%;             /* span entire board horizontally */
-    background: url("https://opengameart.org/sites/default/files/oga-textures/125660/wood%2017%20-%20256x256.png") round;
+    background: var(--board-bar-background, transparent) round;
     z-index: 100;
     border-radius: 2px;
     box-shadow: inset 0 0 6px rgba(0,0,0,0.35);
@@ -201,7 +201,7 @@ function onCellClick(point: number) {
   position: absolute;
   inset: 0;
   clip-path: polygon(0 50%, 100% 0, 100% 100%);
-  background: #ffffff;
+  background: var(--board-point-light);
   transition: clip-path .25s ease;
   z-index: 0;
   box-shadow:
@@ -211,7 +211,7 @@ function onCellClick(point: number) {
   border-radius: 2px;
 }
 
-#game .cell:nth-child(even)::before { background: #023E8A; }
+#game .cell:nth-child(even)::before { background: var(--board-point-dark); }
 
 @media (max-width: 767px) {
   #game .cell:nth-child(odd)::before {
@@ -283,13 +283,15 @@ function onCellClick(point: number) {
 }
 
 #game .checker.black {
-  background: radial-gradient(circle at 30% 30%, #444, #000);
-  color: #fff;
+  background: radial-gradient(circle at 30% 30%, var(--checker-black-gradient-start), var(--checker-black-gradient-end));
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  color: var(--checker-black-text);
 }
+
 #game .checker.white {
-  background: radial-gradient(circle at 30% 30%, #fff, #cfcfcf);
-  border: 1px solid #b5b5b5;
-  color: #0b0b0b;
+  background: radial-gradient(circle at 30% 30%, var(--checker-white-gradient-start), var(--checker-white-gradient-end));
+  border: 1px solid var(--checker-white-border);
+  color: var(--checker-white-text);
 }
 
 #game.active-move {
