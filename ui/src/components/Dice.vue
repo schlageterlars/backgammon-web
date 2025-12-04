@@ -19,8 +19,23 @@ const props = defineProps<{
   dice: number[]
 }>()
 
+// Get current theme's dice folder
+const getDiceFolder = () => {
+  const theme = document.documentElement.getAttribute('data-theme') || 'default'
+  const folderMap: Record<string, string> = {
+    'default': '',
+    'classic-wood': '',
+    'dark': 'dark',
+    'ocean': 'ocean',
+    'desert': 'desert'
+  }
+  return folderMap[theme] || ''
+}
+
 const getDiceImage = (value: number) => {
-  return `/assets/images/${value}.png`
+  const folder = getDiceFolder()
+  const path = folder ? `/assets/images/dice/${folder}/${value}.png` : `/assets/images/dice/${value}.png` 
+  return path
 }
 
 // Store positions mapped by unique dice ID
@@ -126,8 +141,7 @@ const getDiceStyle = (id: string) => {
   position: absolute;
   width: 60px;
   height: 60px;
-  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4))
-          drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+  filter: var(--dice-shadow);
 }
 
 .die.animate {
