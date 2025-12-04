@@ -8,6 +8,9 @@ import router from './router'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
+// Theme system
+import './themes/themes.css'
+
 const app = createApp(App)
 
 app.use(router)

@@ -1,0 +1,211 @@
+/* Default Theme */
+:root {
+  /* Board colors */
+  --board-background: #ADE8F4;
+  --board-border-image: url("https://opengameart.org/sites/default/files/oga-textures/125660/wood%2017%20-%20256x256.png");
+  --board-point-light: #ffffff;
+  --board-point-dark: #023E8A;
+  --board-bar-background: url("https://opengameart.org/sites/default/files/oga-textures/125660/wood%2017%20-%20256x256.png");
+  
+  /* Checker colors */
+  --checker-white-gradient-start: #fff;
+  --checker-white-gradient-end: #cfcfcf;
+  --checker-white-border: #b5b5b5;
+  --checker-white-text: #0b0b0b;
+  --checker-white-image: none;
+  --checker-black-gradient-start: #444;
+  --checker-black-gradient-end: #000;
+  --checker-black-text: #fff;
+  --checker-black-image: none;
+  
+  /* Dice colors */
+  --dice-shadow: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+  --dice-folder: 'default';
+  
+  /* UI colors */
+  --background-color: #f0f0f0;
+  --background-image: none;
+  --text-color: #333;
+  --chat-background: #ffffff;
+  --chat-border: #ddd;
+  --status-background: #ffffff;
+  --status-border: #ddd;
+  --button-primary: #007bff;
+  --button-primary-hover: #0056b3;
+  --button-danger: #b33;
+  --button-danger-hover: #922;
+}
+/* Classic Wood Theme (Forest-Style) */
+[data-theme="classic-wood"] {
+  --board-background: #b7e4c7;
+  --board-border-image: url("https://opengameart.org/sites/default/files/oga-textures/125660/wood%2017%20-%20256x256.png");
+  --board-point-light: #f8faf5;
+  --board-point-dark: #2a9d8f;
+  --board-bar-background: url("https://opengameart.org/sites/default/files/oga-textures/125660/wood%2017%20-%20256x256.png");
+  
+  --checker-white-gradient-start: #fdfaf3;
+  --checker-white-gradient-end: #e2d7bf;
+  --checker-white-border: #c2ac84;
+  --checker-white-text: #2f2a20;
+  --checker-black-gradient-start: #3b3025;
+  --checker-black-gradient-end: #1f150f;
+  --checker-black-text: #fdfaf3;
+  --checker-white-image: none;
+  --checker-black-image: none;
+  
+  --dice-shadow: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+  --dice-folder: 'default';
+  
+  --background-color: #d8e2c8;
+  --background-image: url('/assets/images/background/wald-himmel.jpg');
+  --text-color: #ffffff;
+  
+  --chat-background: rgba(255, 255, 255, 0.12);
+  --chat-border: transparent;
+  
+  --status-background: radial-gradient(
+    circle at top left,
+    rgba(0, 60, 40, 0.96),
+    rgba(0, 30, 20, 0.98) 95%
+  );
+  --status-border: rgba(255, 215, 0, 0.6);
+  
+  --button-primary: #2f6f3e;
+  --button-primary-hover: #245632;
+  --button-danger: #b33;
+  --button-danger-hover: #922;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --board-background: #1a1a2e;
+  --board-point-light: #16213e;
+  --board-point-dark: #0f3460;
+  --board-border-image: url("https://opengameart.org/sites/default/files/oga-textures/125660/wood%2017%20-%20256x256.png");
+  
+  --checker-white-gradient-start: #e0e0e0;
+  --checker-white-gradient-end: #a0a0a0;
+  --checker-white-border: #888;
+  --checker-white-text: #000;
+  --checker-black-gradient-start: #333;
+  --checker-black-gradient-end: #000;
+  --checker-black-text: #fff;
+  --checker-white-image: none;
+  --checker-black-image: none;
+  
+  --dice-shadow: drop-shadow(0 8px 12px rgba(255, 255, 255, 0.2)) drop-shadow(0 4px 6px rgba(255, 255, 255, 0.1));
+  --dice-folder: 'dark';
+  
+  --background-color: #0f0f1e;
+  --background-image: none;
+  --text-color: #e0e0e0;
+  --chat-background: #1a1a2e;
+  --chat-border: #333;
+  --status-background: #1a1a2e;
+  --status-border: #333;
+  --button-primary: #4a90e2;
+  --button-primary-hover: #357abd;
+  --button-danger: #dc3545;
+  --button-danger-hover: #c82333;
+}
+
+/* Ocean Theme */
+[data-theme="ocean"] {
+  --board-background: #00a8cc;
+  --board-point-light: #005082;
+  --board-point-dark: #00334e;
+  --board-border-image: url('/assets/images/border/ocean.png');
+  
+  --checker-white-gradient-start: #ffd700;
+  --checker-white-gradient-end: #ffb700;
+  --checker-white-border: #cc9200;
+  --checker-white-text: #000;
+  --checker-black-gradient-start: #2d4059;
+  --checker-black-gradient-end: #1a2332;
+  --checker-black-text: #fff;
+  --checker-white-image: none;
+  --checker-black-image: none;
+  
+  --dice-shadow: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.6)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+  --dice-folder: 'ocean';
+  
+  --background-color: #006994;
+  --background-image: url('/assets/images/background/ocean.jpg');
+  --text-color: #fff;
+  --chat-background: rgba(0, 0, 0, 0.3);
+  --chat-border: #004d6d;
+  --status-background: rgba(0, 0, 0, 0.3);
+  --status-border: #005082;
+  --button-primary: #ffd700;
+  --button-primary-hover: #ffb700;
+  --button-danger: #ff4444;
+  --button-danger-hover: #cc0000;
+}
+
+/* Desert Theme */
+[data-theme="desert"] {
+  --board-background: #f4a261;
+  --board-point-light: #e9c46a;
+  --board-point-dark: #e76f51;
+  --board-border-image: url("/assets/images/border/desert.jpg");
+  
+  --checker-white-gradient-start: #fffbeb;
+  --checker-white-gradient-end: #fef3c7;
+  --checker-white-border: #d4a574;
+  --checker-white-text: #5a3e2b;
+  --checker-white-image: none;
+  --checker-black-gradient-start: #5a3e2b;
+  --checker-black-gradient-end: #3d2817;
+  --checker-black-text: #000000;
+  --checker-black-image: url('/assets/images/checker/steppenlaeufer.png');
+  
+  --dice-shadow: drop-shadow(0 8px 12px rgba(90, 62, 43, 0.5)) drop-shadow(0 4px 6px rgba(90, 62, 43, 0.3));
+  --dice-folder: 'desert';
+  
+  --background-color: none;
+  --background-image: url('/assets/images/background/desert-sand-bg.jpg');
+  --text-color: #5a3e2b;
+  --chat-background: rgba(255, 255, 255, 0.8);
+  --chat-border: #d4a574;
+  --status-background: rgba(255, 255, 255, 0.8);
+  --status-border: #d4a574;
+  --button-primary: #e76f51;
+  --button-primary-hover: #d35f41;
+  --button-danger: #c44536;
+  --button-danger-hover: #a53a2b;
+}
+
+/* Forest Theme */
+[data-theme="forest"] {
+  --board-background: #264653;
+  --board-border-image: url("/assets/images/border/forest.png");
+  --board-bar-background: url("/assets/images/border/forest.png");
+  --board-point-light: #2a9d8f;
+  --board-point-dark: #1b3a32;
+  --board-border-image: none;
+  
+  --checker-white-gradient-start: #f4f1de;
+  --checker-white-gradient-end: #e0d3b8;
+  --checker-white-border: #b89b72;
+  --checker-white-text: #3b2f2f;
+  --checker-white-image: none;
+  --checker-black-gradient-start: #2f3e46;
+  --checker-black-gradient-end: #1d252b;
+  --checker-black-text: #f4f1de;
+  --checker-black-image: none;
+  
+  --dice-shadow: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+  --dice-folder: 'forest';
+  
+  --background-color: #102016;
+  --background-image: url('/assets/images/background/forest.png');
+  --text-color: #f1faee;
+  --chat-background: rgba(0, 0, 0, 0.45);
+  --chat-border: #264653;
+  --status-background: rgba(0, 0, 0, 0.45);
+  --status-border: #2a9d8f;
+  --button-primary: #2a9d8f;
+  --button-primary-hover: #21867a;
+  --button-danger: #e63946;
+  --button-danger-hover: #d62828;
+}
