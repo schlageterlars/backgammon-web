@@ -26,7 +26,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { showToast } from '@/utils/toast';
 
 export default {
@@ -65,14 +65,14 @@ export default {
     copyLobbyId() {
       navigator.clipboard.writeText(this.lobbyId).then(() => showToast('Lobby ID copied!'));
     },
-    startDrag(e) {
+    startDrag(e: { clientX: number; clientY: number; }) {
       this.isDragging = true;
       this.startX = e.clientX;
       this.startY = e.clientY;
       document.addEventListener('mousemove', this.onDrag);
       document.addEventListener('mouseup', this.stopDrag);
     },
-    onDrag(e) {
+    onDrag(e: { clientX: number; clientY: number; }) {
       if (this.isDragging) {
         const dx = e.clientX - this.startX;
         const dy = e.clientY - this.startY;

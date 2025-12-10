@@ -9,23 +9,31 @@ import play.filters.csrf.CSRFCheck
 import scala.util.Random
 import play.filters.csrf.CSRF
 
-
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents, ws: WSClient)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class HomeController @Inject() (cc: ControllerComponents, ws: WSClient)(implicit
+    ec: ExecutionContext
+) extends AbstractController(cc) {
 
   def getCsrfToken() = Action { implicit request: Request[AnyContent] =>
-    Ok(CSRF.getToken.get.value) 
+    Ok(CSRF.getToken.get.value)
   }
 
-  def getLobbyCount() = Action { implicit request: Request[AnyContent] =>
-    val count = Random.nextInt(10)
-    Ok(count.toString)
+  def getLobbyCount() = Action.async { implicit request: Request[AnyContent] =>
+    ws.url("http://localhost:9000/matchmaking/count")
+      .post("")
+      .map { response =>
+        Ok(response.body)
+      }
   }
 
-  def updateUsername() = Action { implicit request: Request[AnyContent]  =>
-    request.body.asFormUrlEncoded.flatMap(_.get("username").flatMap(_.headOption)) match {
+  def updateUsername() = Action { implicit request: Request[AnyContent] =>
+    request.body.asFormUrlEncoded.flatMap(
+      _.get("username").flatMap(_.headOption)
+    ) match {
       case Some(username) =>
-        Ok("Username updated").withSession(request.session + ("username" -> username))
+        Ok("Username updated").withSession(
+          request.session + ("username" -> username)
+        )
       case None =>
         BadRequest("No username provided")
     }
@@ -34,40 +42,33 @@ class HomeController @Inject()(cc: ControllerComponents, ws: WSClient)(implicit 
   def getUsername() = Action { implicit request: Request[AnyContent] =>
     request.session.get("username") match {
       case Some(username) => Ok(username)
-      case None           => Ok("") 
+      case None           => Ok("")
     }
   }
 
   def createLobby: Action[AnyContent] = Action.async { implicit request =>
-    val data = request.body.asFormUrlEncoded
-    val boardSizeOpt = data.flatMap(_.get("boardSize").flatMap(_.headOption))
-    val scopeOpt = data.flatMap(_.get("scope").flatMap(_.headOption))
-    val colorDesicionOpt = data.flatMap(_.get("player").flatMap(_.headOption))
+    val data = request.body.asFormUrlEncoded.getOrElse(Map.empty)
+
+    val json: JsObject = JsObject(
+      data.map { case (key, values) =>
+        key -> JsString(values.headOption.getOrElse(""))
+      }
+    )
 
     print(s"Create new lobby with ${data}")
 
-    (boardSizeOpt, scopeOpt, colorDesicionOpt) match {
-      case (Some(boardSize), Some(scope), Some(colorDecision)) =>
-        ws.url("http://localhost:9000/lobby")
-          .post(Json.obj(
-            "boardSize" -> boardSize,
-            "scope" -> scope,
-            "colorDesicion" -> colorDecision
-          ))
-          .map { response =>
-            val lobbyId = (response.json \ "lobbyId").as[String]
-            Redirect(routes.HomeController.lobby(lobbyId))
-          }
-          .recover {
-            case _: java.net.ConnectException =>
-              BadRequest("Server is not reachable")
-            case ex =>
-              InternalServerError(s"Unexpected error: ${ex.getMessage}")
-          }
-
-      case _ =>
-        Future.successful(BadRequest("Missing board size, scope, or color decision"))
-    }
+    ws.url("http://localhost:9000/lobby")
+      .post(json)
+      .map { response =>
+        val lobbyId = (response.json \ "lobbyId").as[String]
+        Redirect(routes.HomeController.lobby(lobbyId))
+      }
+      .recover {
+        case _: java.net.ConnectException =>
+          BadRequest("Server is not reachable")
+        case ex =>
+          InternalServerError(s"Unexpected error: ${ex.getMessage}")
+      }
   }
 
   def lobby(lobbyId: String) = Action { implicit request: Request[AnyContent] =>

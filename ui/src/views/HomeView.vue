@@ -6,6 +6,13 @@
       <div class="content">
         <h2>BACKGAMMON</h2>
       </div>
+      <QueueModal
+        :playerColor="playerColor"
+        :boardSize="boardSize"
+        :scope="scope"
+        :isQueueing="isQueueing"
+        @update:isQueueing="val => isQueueing = val"
+      />
 
       <!-- Fishing Rod SVG -->
       <div class="fishing-container">
@@ -61,7 +68,7 @@
             </div>
           </div>
 
-          <form class="row g-3" @submit.prevent="createLobby">
+          <form class="row g-3" @submit.prevent="joinOrQueue">
 
             <!-- Board size -->
             <div class="col-12">
@@ -171,15 +178,10 @@
 </template>
 
 <script lang="ts" setup>
-import styles from './HomeView.module.css'
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-import { showToast } from '@/utils/toast';
 import { useApi } from '@/utils/useApi'
-
-
-const router = useRouter()
+import { useQueue } from '@/utils/useQueue'
+import QueueModal from './QueueModal.vue'
 
 // reactive state
 const boardSize = ref('Classic')
@@ -191,12 +193,18 @@ const {
   openLobbyCount,
   csrfToken,
 
-  fetchCsrfToken,
   fetchUsername,
   fetchLobbyCount,
 
   updateUsername,
 } = useApi()
+
+const {
+  isQueueing,
+  joinCode,
+  joinOrQueue,
+  joinLobby
+} = useQueue(username, playerColor, boardSize, scope, csrfToken)
 
 let intervalId: number
 
@@ -245,46 +253,6 @@ const scopes = [
 // Computed button text
 const createButtonText = computed(() => (scope.value === 'Public' ? 'Quick Join' : 'Create Lobby'))
 
-// Methods
-const createLobby = async () => {
-  if (!username.value) {
-    alert('Enter your username')
-    return
-  }
-
-  await fetchCsrfToken()
-  const response = await fetch('/lobby', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Csrf-Token': csrfToken.value
-    },
-    body: new URLSearchParams({
-      player: playerColor.value,
-      boardSize: boardSize.value,
-      scope: scope.value
-    })
-  })
-
-  if (response.redirected) {
-    const url = new URL(response.url)
-    const lobbyId = url.pathname.split('/').pop()
-    router.push(`/lobby/${lobbyId}`)
-  } else {
-    showToast(await response.text(), "danger")
-  }
-}
-
-const joinCode = ref("");
-
-function joinLobby() {
-  if (joinCode.value.trim() === "") {
-    showToast("Please enter a lobby code", "warning");
-    return;
-  }
-
-  router.push(`/lobby/${joinCode.value}`);
-}
 </script>
 
 <style scoped>
