@@ -39,22 +39,24 @@
     </div>
 
     <!-- Player input -->
+    <!-- #web-comp: Vuetify v-text-field Web Component -->
     <div class="row justify-content-center mb-4">
       <div class="col-12 col-md-10 col-lg-8">
-        <input
+        <v-text-field
           v-model="username"
-          type="text"
-          class="form-control"
-          placeholder="Enter your name"
+          label="Enter your name"
+          variant="outlined"
           required
+          density="comfortable"
         />
       </div>
     </div>
 
     <!-- Start a new game -->
+    <!-- #web-comp: Vuetify v-card Web Component -->
     <div class="row justify-content-center g-4 mt-4">
       <div class="col-12 col-lg-8">
-        <div class="card card-lobby p-4">
+        <v-card class="card-lobby pa-4">
           <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
               <h3 class="mb-0">Start a new game</h3>
@@ -125,18 +127,20 @@
             </div>
 
             <!-- Create Button -->
+            <!-- #web-comp: Vuetify v-btn Web Component -->
             <div class="col-12 d-flex justify-content-end align-items-center gap-2">
               <span v-if="scope === 'Public'" class="text-muted small me-4">{{ openLobbyCount }} open lobbies</span>
-              <button type="submit" class="btn btn-primary">{{ createButtonText }}</button>
+              <v-btn type="submit" color="primary" size="large">{{ createButtonText }}</v-btn>
             </div>
 
           </form>
-        </div>
+        </v-card>
       </div>
 
       <!-- Join Lobby -->
+      <!-- #web-comp: Vuetify v-card Web Component -->
       <div class="col-12 col-lg-4">
-        <div class="card card-lobby p-4">
+        <v-card class="card-lobby pa-4">
           <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
               <h3 class="mb-0">Join a lobby</h3>
@@ -145,30 +149,32 @@
           </div>
 
           <div class="row g-3">
+            <!-- #web-comp: Vuetify v-text-field Web Component -->
             <div class="col-12">
-              <label class="form-label fw-semibold" for="joinCode">Lobby Code</label>
-              <input
-                type="text"
-                id="joinCode"
-                class="form-control"
-                placeholder="Enter lobby code..."
+              <v-text-field
                 v-model="joinCode"
+                label="Lobby Code"
+                placeholder="Enter lobby code..."
+                variant="outlined"
+                density="comfortable"
               />
             </div>
 
+            <!-- #web-comp: Vuetify v-btn Web Component -->
             <div class="col-12 d-flex justify-content-end">
-                <button
+                <v-btn
                     id="joinLobby"
-                    type="button"
-                    class="btn btn-outline-primary"
+                    variant="outlined"
+                    color="primary"
+                    size="large"
                     @click="joinLobby"
                     >
                     Start Match
-                </button>
+                </v-btn>
             </div>
           </div>
 
-        </div>
+        </v-card>
       </div>
     </div>
     <div class="wave wave-1"></div>
@@ -338,16 +344,47 @@ h3 {
 
 /* Cards */
 .card-lobby {
-    background: rgba(0, 20, 50, 0.7);
-    border-radius: 20px;
-    border: 1px solid rgba(0, 200, 255, 0.3);
-    box-shadow: 0 0 20px rgba(0, 200, 255, 0.2), 0 0 40px rgba(0, 120, 255, 0.2);
+    background: rgba(0, 20, 50, 0.7) !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(0, 200, 255, 0.3) !important;
+    box-shadow: 0 0 20px rgba(0, 200, 255, 0.2), 0 0 40px rgba(0, 120, 255, 0.2) !important;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card-lobby:hover {
     transform: translateY(-3px);
-    box-shadow: 0 0 30px rgba(0, 200, 255, 0.4), 0 0 60px rgba(0, 120, 255, 0.4);
+    box-shadow: 0 0 30px rgba(0, 200, 255, 0.4), 0 0 60px rgba(0, 120, 255, 0.4) !important;
+}
+
+/* Vuetify Text Field Styles */
+:deep(.v-text-field) {
+  background: rgba(0, 40, 80, 0.6);
+  border-radius: 10px;
+}
+
+:deep(.v-text-field .v-field) {
+  color: #c0f0ff;
+  border-color: #00cfff;
+}
+
+:deep(.v-text-field .v-field__input) {
+  color: #c0f0ff;
+}
+
+:deep(.v-text-field .v-label) {
+  color: #6699cc;
+}
+
+/* Vuetify Button Styles */
+:deep(.v-btn) {
+  text-transform: none;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+:deep(.v-btn:hover) {
+  box-shadow: 0 0 20px rgba(0, 200, 255, 0.6);
 }
 
 /* Option Cards */

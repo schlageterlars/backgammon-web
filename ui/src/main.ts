@@ -1,6 +1,9 @@
 import './assets/main.css'
 import './themes/themes.css'
 
+// #web-comp: Import Custom Web Components
+import './components/web-components'
+
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'

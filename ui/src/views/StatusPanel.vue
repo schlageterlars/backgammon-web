@@ -1,29 +1,40 @@
 <template>
-  <div
+  <!-- #web-comp: Vuetify v-card, v-toolbar, v-chip, v-list Web Components -->
+  <v-card
     class="status-panel"
     :style="{ top: top + 'px', right: right + 'px', position: 'absolute' }"
     @mousedown="startDrag"
   >
-    <div class="leave-container">
-      <span class="lobby-id" @click.stop="copyLobbyId">
+    <v-toolbar color="primary" density="compact">
+      <v-chip @click.stop="copyLobbyId" size="small" variant="outlined" class="ml-2">
         Lobby: {{ lobbyId }}
-      </span>
-      <button class="leave-btn" @click="$emit('leave')">✖</button>
-    </div>
+      </v-chip>
+      <v-spacer />
+      <v-btn icon="mdi-close" size="small" @click="$emit('leave')" />
+    </v-toolbar>
 
-      <div class="players-container">
-        <div class="player-card" :class="{ 'active-turn': isWhiteTurn }">
-          <div class="color-dot bg-white border border-gray-400"></div>
-          <span class="username">{{ whitePlayer?.name || 'Waiting...' }}</span>
-          <span v-if="whitePlayer && !whitePlayer.connected" class="text-red-500"> (Disconnected)</span>
-        </div>
-        <div class="player-card" :class="{ 'active-turn': isBlackTurn }">
-          <div class="color-dot bg-black"></div>
-          <span class="username">{{ blackPlayer?.name || 'Waiting...' }}</span>
-          <span v-if="blackPlayer && !blackPlayer.connected" class="text-red-500"> (Disconnected)</span>
-        </div>
-      </div>
-  </div>
+    <v-list class="players-container" density="compact">
+      <v-list-item :class="{ 'active-turn': isWhiteTurn }">
+        <template v-slot:prepend>
+          <v-avatar size="24" color="white" class="border-avatar" />
+        </template>
+        <v-list-item-title>{{ whitePlayer?.name || 'Waiting...' }}</v-list-item-title>
+        <v-list-item-subtitle v-if="whitePlayer && !whitePlayer.connected" class="text-red-500">
+          (Disconnected)
+        </v-list-item-subtitle>
+      </v-list-item>
+      
+      <v-list-item :class="{ 'active-turn': isBlackTurn }">
+        <template v-slot:prepend>
+          <v-avatar size="24" color="black" />
+        </template>
+        <v-list-item-title>{{ blackPlayer?.name || 'Waiting...' }}</v-list-item-title>
+        <v-list-item-subtitle v-if="blackPlayer && !blackPlayer.connected" class="text-red-500">
+          (Disconnected)
+        </v-list-item-subtitle>
+      </v-list-item>
+    </v-list>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -104,20 +115,47 @@ export default {
   font-size: 0.85em;
   font-weight: 500;
 }
+
+.border-avatar {
+  border: 1px solid #ccc;
+}
+
 .status-panel {
   position: fixed;
   top: 20px;
   right: 20px;
   max-width: 330px;
-  background: var(--status-background);
-  border: 2px solid var(--status-border);
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  background: var(--status-background) !important;
+  border: 2px solid var(--status-border) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
   z-index: 10;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  cursor: move;
+}
+
+.status-panel :deep(.v-toolbar) {
+  background: var(--button-primary) !important;
+}
+
+.status-panel :deep(.v-list) {
+  background: transparent !important;
+  padding: 8px;
+}
+
+.status-panel :deep(.v-list-item) {
+  background: var(--chat-background);
+  border: 1px solid var(--chat-border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+  padding: 8px 16px;
+}
+
+.status-panel :deep(.v-list-item.active-turn) {
+  border: 4px solid gold !important;
+  box-shadow: 0 0 20px 8px rgba(255, 215, 0, 0.8) !important;
+  background: rgba(255, 215, 0, 0.15) !important;
+  transform: scale(1.05);
 }
 
 .leave-container {
