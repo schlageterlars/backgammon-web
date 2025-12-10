@@ -12,14 +12,14 @@
     </div>
 
       <div class="players-container">
-        <div class="player-card">
+        <div class="player-card" :class="{ 'active-turn': isWhiteTurn }">
           <div class="color-dot bg-white border border-gray-400"></div>
           <span class="username">{{ whitePlayer?.name || 'Waiting...' }}</span>
           <span v-if="whitePlayer && !whitePlayer.connected" class="text-red-500"> (Disconnected)</span>
         </div>
-        <div class="player-card">
+        <div class="player-card" :class="{ 'active-turn': isBlackTurn }">
           <div class="color-dot bg-black"></div>
-          <span class="username text-white">{{ blackPlayer?.name || 'Waiting...' }}</span>
+          <span class="username">{{ blackPlayer?.name || 'Waiting...' }}</span>
           <span v-if="blackPlayer && !blackPlayer.connected" class="text-red-500"> (Disconnected)</span>
         </div>
       </div>
@@ -30,6 +30,7 @@
 import { showToast } from '@/utils/toast';
 
 export default {
+  components: {},
   props: {
     lobbyId: { type: String, required: true },
     state: {
@@ -60,6 +61,12 @@ export default {
     isWaiting() {
       return !this.gameStarted;
     },
+    isWhiteTurn() {
+      return this.state?.currentPlayer === 'WHITE';
+    },
+    isBlackTurn() {
+      return this.state?.currentPlayer === 'BLACK';
+    }
   },
   methods: {
     copyLobbyId() {
@@ -102,7 +109,8 @@ export default {
   top: 20px;
   right: 20px;
   max-width: 330px;
-  background: radial-gradient(circle at top left, #001e3c, #000814 95%);
+  background: var(--status-background);
+  border: 2px solid var(--status-border);
   padding: 16px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -121,7 +129,7 @@ export default {
 
 .lobby-id {
   font-weight: 600;
-  color: #fff;
+  color: var(--text-color);
   display: flex;
   font-size: 00.75rem;
   align-items: center;
@@ -153,7 +161,7 @@ export default {
 .leave-btn {
   padding: 6px 12px;
   font-size: 14px;
-  background: #b33;
+  background: var(--button-danger, #b33);
   color: white;
   border: none;
   border-radius: 6px;
@@ -164,7 +172,7 @@ export default {
   justify-content: center;
 }
 .leave-btn:hover {
-  background: #922;
+  background: var(--button-danger-hover, #922);
 }
 
 .players-container {
@@ -180,9 +188,19 @@ export default {
   padding: 8px 16px;
   border-radius: 10px;
   flex: 1 1 0;
-  background: rgba(255,255,255,0.1);
+  background: var(--chat-background);
+  border: 1px solid var(--chat-border);
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
 }
+
+.player-card.active-turn {
+  border: 4px solid gold !important;
+  box-shadow: 0 0 20px 8px rgba(255, 215, 0, 0.8) !important;
+  background: rgba(255, 215, 0, 0.15);
+  transform: scale(1.05);
+}
+
 .color-dot {
   width: 16px;
   height: 16px;
@@ -199,6 +217,6 @@ export default {
 }
 .username {
   font-weight: 600;
-  color: #fff;
+  color: var(--text-color);
 }
 </style>
