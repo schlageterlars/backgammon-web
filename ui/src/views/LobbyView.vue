@@ -3,6 +3,7 @@
   <ThemeToggle />
   <div class="lobby">
   <StatusPanel
+    v-if="lobbyState"
     :lobbyId="lobbyId"
     :state="lobbyState"
     @leave="leaveLobby"
@@ -19,7 +20,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useLobbyWebSocket, BoardState } from '../utils/lobbyWebSocket';
+import { useLobbyWebSocket, type BoardState } from '../utils/useLobbyWebSocket';
 import ChatWindow from "./ChatWindow.vue";
 import Board from './Board.vue' 
 import Dice from '../components/Dice.vue'
@@ -34,7 +35,7 @@ const route = useRoute();
 const lobbyId = route.params.id as string;
 
 const {
-username,
+  username,
   fetchUsername,
 } = useApi()
 
@@ -46,8 +47,6 @@ onMounted(async () => {
 // Call composable
 const { messages, player, gameState, lobbyState, connected, sendMessage, sendMove, close } =
   useLobbyWebSocket(lobbyId, username);
-
-const board: BoardState | null = gameState.game
 
 const router = useRouter()
 function leaveLobby() {

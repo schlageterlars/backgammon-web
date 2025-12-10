@@ -47,8 +47,8 @@
 
 
 <script lang="ts" setup>
-import { ref, computed, defineProps, onMounted, onUnmounted } from 'vue'
-import type { BoardState } from '../utils/lobbyWebSocket'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import type { BoardState } from '../utils/useLobbyWebSocket'
 
 const props = defineProps<{
   board: BoardState,
@@ -75,8 +75,8 @@ const boardPoints = computed(() => {
   if (width < 768) {
     return Array.from({ length: Math.ceil(len / 2) })
         .flatMap((_, i) => {
-        const start = { field: fields[i], originalIndex: i };
-        const end = i !== len - 1 - i ? { field: fields[len - 1 - i], originalIndex: len - 1 - i } : [];
+        const start = { field: fields[i] ?? 0, originalIndex: i };
+        const end = i !== len - 1 - i ? { field: fields[len - 1 - i] ?? 0, originalIndex: len - 1 - i } : [];
         return [start, end].flat();
     });
   }
