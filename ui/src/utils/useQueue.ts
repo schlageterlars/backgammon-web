@@ -70,6 +70,10 @@ export function useQueue(
       boardSize: boardSize.value,
       scope: scope.value
     })
+    if (username.value == undefined || username.value?.trim() == ''){
+      showToast('Please enter a username', 'warning')
+      return
+    }
 
     if (scope.value === 'Public') {
       joinQueue()
@@ -96,6 +100,10 @@ export function useQueue(
   function joinLobby() {
     if (joinCode.value.trim() === '') {
       showToast('Please enter a lobby code', 'warning')
+      return
+    }
+    if (username.value == undefined || username.value?.trim() == ''){
+      showToast('Please enter a username', 'warning')
       return
     }
 
