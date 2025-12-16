@@ -15,7 +15,11 @@ export function useQueue(
   const isQueueing = ref(false)
   const joinCode = ref('')
 
-  async function joinQueue() {
+  async function joinQueue(payload: {
+    player: string;
+    boardSize: string;
+    scope: string;
+  }){
     const startTime = new Date().toISOString()
 
     try {
@@ -29,11 +33,7 @@ export function useQueue(
 
         const joinQueueMsg = {
           playerId: username,
-          options: {
-            player: playerColor.value,
-            boardSize: boardSize.value,
-            scope: scope.value
-          }
+          options: payload
         }
 
         socket.send(JSON.stringify(joinQueueMsg))
@@ -66,20 +66,26 @@ export function useQueue(
   }
 
   async function joinOrQueue() {
+    const payload = {
+      player: playerColor.value,
+      boardSize: boardSize.value,
+      scope: scope.value
+    };
+
     if (scope.value === 'Public') {
-      joinQueue()
-    } else {
-      createLobby(new URLSearchParams({
-        player: playerColor.value,
-        boardSize: boardSize.value,
-        scope: scope.value
-      }))
+      await joinQueue(payload)
+      return
     }
+    await createLobby(payload);
   }
 
-  async function createLobby(formData: URLSearchParams) {
+  async function createLobby(payload: {
+    player: string;
+    boardSize: string;
+    scope: string;
+  }) {
     try {
-      const response = await api.post("/lobby", formData);
+      const response = await api.post("/lobby", payload);
       const lobbyId = response.data.lobbyId;
 
       if (!lobbyId) {
