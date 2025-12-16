@@ -1,6 +1,15 @@
 import { ref, watch } from 'vue'
 
-export type Theme = 'default' | 'classic-wood' | 'dark' | 'ocean' | 'desert'
+const themes = [
+  { value: 'default', label: 'Modern', icon: 'bi-file-earmark-fill' },
+  { value: 'classic-wood', label: 'Classic Wood', icon: 'bi-box-fill' },
+  { value: 'dark', label: 'Dark', icon: 'bi-moon-stars-fill' },
+  { value: 'ocean', label: 'Ocean', icon: 'bi-water' },
+  { value: 'desert', label: 'Desert', icon: 'bi-sun-fill' },
+  { value: 'forest', label: 'Forest', icon: 'bi-tree-fill' }
+] as const
+
+export type Theme = typeof themes[number]['value']
 
 const THEME_STORAGE_KEY = 'backgammon-theme'
 
@@ -10,10 +19,14 @@ export function useTheme() {
   // Load theme from localStorage on init
   const loadTheme = () => {
     const saved = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null
-    if (saved && ['default', 'classic-wood', 'dark', 'ocean', 'desert'].includes(saved)) {
+    if (saved && isTheme(saved)) {
       currentTheme.value = saved
       applyTheme(saved)
     }
+  }
+
+  function isTheme(value: string): value is Theme {
+    return themes.some(t => t.value === value)
   }
 
   // Apply theme to document
@@ -43,8 +56,8 @@ export function useTheme() {
   }
 
   return {
+    themes,
     currentTheme,
     setTheme,
-    themes: ['default', 'classic-wood', 'dark', 'ocean', 'desert'] as const
   }
 }

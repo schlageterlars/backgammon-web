@@ -31,7 +31,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch, nextTick } from "vue";
-import type { ChatMessage } from '../utils/useLobbyWebSocket';
+import type { ChatMessage } from "@/types/lobby-types"
 
 export default defineComponent({
   name: "ChatWindow",

@@ -3,14 +3,13 @@ import { ControllerJS } from "@/assets/backgammon-opt.min.js";
 import type { GameState, UseLobby } from "@/types/lobby-types";
 
 export function useLocalLobby(): UseLobby {
-  const connected = ref(true) // always "connected" offline
+  const connected = ref(true) 
   const player = ref<string>("local")
-  const lobbyState = ref(null) // explicitly unused
-  const messages = reactive([]) // unused
+  const lobbyState = ref(null) 
+  const messages = reactive([])
 
   const gameState: Ref<GameState | null> = ref(null)
 
-  /** 🔁 Pull fresh state from Scala.js */
   const updateGameState = () => {
     const controller = ControllerJS
 
@@ -27,7 +26,6 @@ export function useLocalLobby(): UseLobby {
     console.log(controller.getFields())
   }
 
-  /** 🎯 Replacement for WebSocket sendMove */
   const sendMove = (from: number, to: number) => {
     ControllerJS.doMove(from, to)
     updateGameState()
@@ -36,7 +34,6 @@ export function useLocalLobby(): UseLobby {
   const close = () => { }
   const sendMessage = (text: string) => { }
 
-  /** 🚀 Initialize game engine */
   onMounted(() => {
     ControllerJS.init()
     updateGameState()

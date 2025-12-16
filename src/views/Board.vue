@@ -48,7 +48,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import type { BoardState } from '../utils/useLobbyWebSocket'
+import type { BoardState } from "@/types/lobby-types"
 
 const props = defineProps<{
   board: BoardState,
@@ -83,7 +83,7 @@ const boardPoints = computed(() => {
 
   const topRow = props.board.fields
     .slice(half.value)
-    .map((field, idx) => ({
+    .map((field: number, idx: number) => ({
       field,
       originalIndex: half.value + idx
     }))

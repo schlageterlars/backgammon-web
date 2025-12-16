@@ -38,38 +38,42 @@
       </div>
     </div>
 
-    <!-- Player input -->
-    <div class="row justify-content-center mb-4">
-      <div class="col-12 col-md-10 col-lg-8">
-<div class="d-flex align-items-center gap-3">
-  <!-- Name input -->
-  <input
-    v-model="userStore.username"
-    type="text"
-    class="form-control form-control-sm w-auto flex-grow-1"
-    placeholder="Enter your name"
-    required
-  />
+    <div class="row justify-content-center mb-4" v-if="!online">
+      <Offline/>
+    </div>
 
-  <!-- Text + button -->
-  <div class="d-flex align-items-center gap-2">
-    <small class="text-muted text-wrap" style="max-width: 160px;">
-      Play against another player on this device
-    </small>
-    <button
-      class="btn btn-primary btn-sm"
-      type="button"
-      @click="playLocal"
-    >
-      Play
-    </button>
-  </div>
-</div>
+    <!-- Player input -->
+    <div class="row justify-content-center mb-4" v-if="online">
+      <div class="col-12 col-md-10 col-lg-8">
+        <div class="d-flex align-items-center gap-3">
+          <!-- Name input -->
+          <input
+            v-model="userStore.username"
+            type="text"
+            class="form-control form-control-sm w-auto flex-grow-1"
+            placeholder="Enter your name"
+            required
+          />
+
+          <!-- Text + button -->
+          <div class="d-flex align-items-center gap-2">
+            <small class="text-muted text-wrap" style="max-width: 160px;">
+              Play against another player on this device
+            </small>
+            <button
+              class="btn btn-primary btn-sm"
+              type="button"
+              @click="playLocal"
+            >
+              Play
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Start a new game -->
-    <div class="row justify-content-center g-4 mt-4">
+    <div class="row justify-content-center g-4 mt-4" v-if="online">
       <div class="col-12 col-lg-8">
         <div class="card card-lobby p-4">
           <div class="d-flex align-items-center justify-content-between mb-3">
@@ -185,7 +189,6 @@
                 </button>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -203,6 +206,8 @@ import QueueModal from './QueueModal.vue'
 import { useUserStore } from '@/stores/user'
 import { showToast } from '@/utils/toast'
 import { useRouter } from 'vue-router'
+import { online, goOnline } from "@/api";
+import Offline from '@/views/Offline.vue'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -212,16 +217,13 @@ const boardSize = ref('Classic')
 const scope = ref('Public')
 const playerColor = ref('Random')
 
+
 const {
   openLobbyCount,
   fetchLobbyCount,
 } = useApi()
 
 const playLocal = () => {
-  if (!userStore.username || userStore.username.trim() == '') {
-    showToast("Please enter your name");
-    return; 
-  }
   router.push('/play')
 };
 
@@ -245,7 +247,7 @@ onUnmounted(() => {
 
 // Board size options
 const boardSizes = [
-  { id: 'sizeSmall', label: 'Small', value: 'Small', description: 'Quick rounds, great for beginners', icon: 'bi bi-arrows-angle-contract' },
+  { id: 'sizeSmall', label: 'Small', value: 'Small', description: 'Quick rounds, great for a fast game', icon: 'bi bi-arrows-angle-contract' },
   { id: 'sizeMedium', label: 'Medium', value: 'Medium', description: 'Balanced playtime and strategy', icon: 'bi bi-grid-3x3-gap' },
   { id: 'sizeClassic', label: 'Classic', value: 'Classic', description: 'The original and most balanced board', icon: 'bi bi-grid' }
 ]

@@ -28,17 +28,8 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useTheme, type Theme } from '../utils/useTheme'
 
-const { currentTheme, setTheme } = useTheme()
+const { themes, currentTheme, setTheme } = useTheme()
 const isOpen = ref(false)
-
-const themes = [
-  { value: 'default', label: 'Modern', icon: 'bi-file-earmark-fill' },
-  { value: 'classic-wood', label: 'Classic Wood', icon: 'bi-box-fill' },
-  { value: 'dark', label: 'Dark', icon: 'bi-moon-stars-fill' },
-  { value: 'ocean', label: 'Ocean', icon: 'bi-water' },
-  { value: 'desert', label: 'Desert', icon: 'bi-sun-fill' },
-  { value: 'forest', label: 'Forest', icon: 'bi-tree-fill' }
-]
 
 const toggleMenu = () => {
   isOpen.value = !isOpen.value
