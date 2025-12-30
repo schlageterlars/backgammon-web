@@ -34,3 +34,6 @@ Thumbs.db
 *.log
 
 .metals/
+.bloop/
+project/
+target/
