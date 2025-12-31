@@ -1,6 +1,19 @@
 <template>
   <main class="container py-5">
 
+  <div class="position-fixed top-0 end-0 m-3 d-flex flex-column gap-2">
+    <Login />
+
+    <div class="d-flex align-items-center gap-2 bg-light p-2 rounded shadow-sm">
+      <small class="text-muted text-wrap">
+        Play against another player on this device
+      </small>
+      <button class="btn btn-primary btn-sm" @click="playLocal">
+        Play
+      </button>
+    </div>
+  </div>
+
     <!-- Title -->
     <div class="text-center my-4">
       <div class="content">
@@ -40,36 +53,6 @@
 
     <div class="row justify-content-center mb-4" v-if="!online">
       <Offline/>
-    </div>
-
-    <!-- Player input -->
-    <div class="row justify-content-center mb-4" v-if="online">
-      <div class="col-12 col-md-10 col-lg-8">
-        <div class="d-flex align-items-center gap-3">
-          <!-- Name input -->
-          <input
-            v-model="userStore.username"
-            type="text"
-            class="form-control form-control-sm w-auto flex-grow-1"
-            placeholder="Enter your name"
-            required
-          />
-
-          <!-- Text + button -->
-          <div class="d-flex align-items-center gap-2">
-            <small class="text-muted text-wrap" style="max-width: 160px;">
-              Play against another player on this device
-            </small>
-            <button
-              class="btn btn-primary btn-sm"
-              type="button"
-              @click="playLocal"
-            >
-              Play
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Start a new game -->
@@ -208,6 +191,7 @@ import { showToast } from '@/utils/toast'
 import { useRouter } from 'vue-router'
 import { online, goOnline } from "@/api";
 import Offline from '@/views/Offline.vue'
+import Login from './Login.vue'
 
 const userStore = useUserStore()
 const router = useRouter()
