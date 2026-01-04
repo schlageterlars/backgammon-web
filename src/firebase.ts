@@ -10,6 +10,7 @@ import {
   onAuthStateChanged, 
   type User 
 } from "firebase/auth";
+import { useUserStore } from "@/stores/user";
 
 // Firebase config
 const firebaseConfig = {
@@ -31,6 +32,15 @@ const analytics: Analytics = getAnalytics(app);
 // Firebase Auth
 const auth: Auth = getAuth(app);
 const provider: GoogleAuthProvider = new GoogleAuthProvider();
+
+onAuthStateChanged(auth, (user: User | null) => {
+  const userStore = useUserStore();
+  if (user) {
+    userStore.setUsername(user.displayName || user.email || "Anonymous");
+  } else {
+    userStore.setUsername("");
+  }
+});
 
 // Exports
 export { auth, provider, signInWithPopup, signOut, onAuthStateChanged, analytics };  export type { User };
