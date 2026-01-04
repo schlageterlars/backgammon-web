@@ -58,7 +58,7 @@
     <!-- Start a new game -->
     <div class="row justify-content-center g-4 mt-4" v-if="online">
       <div class="col-12 col-lg-8">
-        <v-card class="card-lobby pa-4">
+        <div class="card card-lobby p-4">
           <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
               <h3 class="mb-0">Start a new game</h3>
@@ -129,20 +129,18 @@
             </div>
 
             <!-- Create Button -->
-            <!-- #web-comp: Vuetify v-btn Web Component -->
             <div class="col-12 d-flex justify-content-end align-items-center gap-2">
               <span v-if="scope === 'Public'" class="text-muted small me-4">{{ openLobbyCount }} open lobbies</span>
               <button :disabled="!userStore.username" type="submit" class="btn btn-primary">{{ createButtonText }}</button>
             </div>
 
           </form>
-        </v-card>
+        </div>
       </div>
 
       <!-- Join Lobby -->
-      <!-- #web-comp: Vuetify v-card Web Component -->
       <div class="col-12 col-lg-4">
-        <v-card class="card-lobby pa-4">
+        <div class="card card-lobby p-4">
           <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
               <h3 class="mb-0">Join a lobby</h3>
@@ -151,29 +149,27 @@
           </div>
 
           <div class="row g-3">
-            <!-- #web-comp: Vuetify v-text-field Web Component -->
             <div class="col-12">
-              <v-text-field
-                v-model="joinCode"
-                label="Lobby Code"
+              <label class="form-label fw-semibold" for="joinCode">Lobby Code</label>
+              <input
+                type="text"
+                id="joinCode"
+                class="form-control"
                 placeholder="Enter lobby code..."
-                variant="outlined"
-                density="comfortable"
+                v-model="joinCode"
               />
             </div>
 
-            <!-- #web-comp: Vuetify v-btn Web Component -->
             <div class="col-12 d-flex justify-content-end">
-                <v-btn
+                <button
                     id="joinLobby"
-                    variant="outlined"
-                    color="primary"
-                    size="large"
+                    type="button"
+                    class="btn btn-outline-primary"
                     @click="joinLobby"
                     :disabled="!userStore.username"
                     >
                     Start Match
-                </v-btn>
+                </button>
             </div>
           </div>
         </div>
@@ -222,7 +218,7 @@ const {
   joinLobby
 } = useQueue(userStore.username, playerColor, boardSize, scope)
 
-let intervalId: number
+let intervalId: ReturnType<typeof setInterval>
 
 onMounted(() => {
   fetchLobbyCount()
@@ -341,47 +337,16 @@ h3 {
 
 /* Cards */
 .card-lobby {
-    background: rgba(0, 20, 50, 0.7) !important;
-    border-radius: 20px !important;
-    border: 1px solid rgba(0, 200, 255, 0.3) !important;
-    box-shadow: 0 0 20px rgba(0, 200, 255, 0.2), 0 0 40px rgba(0, 120, 255, 0.2) !important;
+    background: rgba(0, 20, 50, 0.7);
+    border-radius: 20px;
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 200, 255, 0.2), 0 0 40px rgba(0, 120, 255, 0.2);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card-lobby:hover {
     transform: translateY(-3px);
-    box-shadow: 0 0 30px rgba(0, 200, 255, 0.4), 0 0 60px rgba(0, 120, 255, 0.4) !important;
-}
-
-/* Vuetify Text Field Styles */
-:deep(.v-text-field) {
-  background: rgba(0, 40, 80, 0.6);
-  border-radius: 10px;
-}
-
-:deep(.v-text-field .v-field) {
-  color: #c0f0ff;
-  border-color: #00cfff;
-}
-
-:deep(.v-text-field .v-field__input) {
-  color: #c0f0ff;
-}
-
-:deep(.v-text-field .v-label) {
-  color: #6699cc;
-}
-
-/* Vuetify Button Styles */
-:deep(.v-btn) {
-  text-transform: none;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
-  transition: all 0.3s ease;
-}
-
-:deep(.v-btn:hover) {
-  box-shadow: 0 0 20px rgba(0, 200, 255, 0.6);
+    box-shadow: 0 0 30px rgba(0, 200, 255, 0.4), 0 0 60px rgba(0, 120, 255, 0.4);
 }
 
 /* Option Cards */
