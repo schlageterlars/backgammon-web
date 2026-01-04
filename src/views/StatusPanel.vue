@@ -1,6 +1,5 @@
 <template>
-  <!-- #web-comp: Vuetify v-card, v-toolbar, v-chip, v-list Web Components -->
-  <v-card
+  <div
     class="status-panel"
     :style="{ top: top + 'px', right: right + 'px', position: 'absolute' }"
     @mousedown="startDrag"
@@ -107,47 +106,20 @@ export default {
   font-size: 0.85em;
   font-weight: 500;
 }
-
-.border-avatar {
-  border: 1px solid #ccc;
-}
-
 .status-panel {
   position: fixed;
   top: 20px;
   right: 20px;
   max-width: 330px;
-  background: var(--status-background) !important;
-  border: 2px solid var(--status-border) !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+  background: var(--status-background);
+  border: 2px solid var(--status-border);
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   z-index: 10;
-  cursor: move;
-}
-
-.status-panel :deep(.v-toolbar) {
-  background: var(--button-primary) !important;
-}
-
-.status-panel :deep(.v-list) {
-  background: transparent !important;
-  padding: 8px;
-}
-
-.status-panel :deep(.v-list-item) {
-  background: var(--chat-background);
-  border: 1px solid var(--chat-border);
-  border-radius: 10px;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  transition: all 0.3s ease;
-  padding: 8px 16px;
-}
-
-.status-panel :deep(.v-list-item.active-turn) {
-  border: 4px solid gold !important;
-  box-shadow: 0 0 20px 8px rgba(255, 215, 0, 0.8) !important;
-  background: rgba(255, 215, 0, 0.15) !important;
-  transform: scale(1.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .leave-container {

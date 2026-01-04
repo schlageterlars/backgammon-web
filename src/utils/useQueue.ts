@@ -111,7 +111,7 @@ export function useQueue(
       showToast('Please enter a lobby code', 'warning')
       return
     }
-    if (username.value == undefined || username.value?.trim() == ''){
+    if (username == undefined || username?.trim() == ''){
       showToast('Please enter a username', 'warning')
       return
     }
