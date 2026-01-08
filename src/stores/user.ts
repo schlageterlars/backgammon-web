@@ -1,13 +1,16 @@
 import { defineStore } from 'pinia'
 
-export const useUserStore = defineStore('user', {
+export const useUserStore = defineStore("user", {
   state: () => ({
-    username: null as string | null
+    username: "",
+    isAnonymous: true
   }),
   actions: {
     setUsername(name: string) {
-      this.username = name
+      this.username = name;
+    },
+    setAnonymous(value: boolean) {
+      this.isAnonymous = value;
     }
-  },
-  persist: true 
-})
+  }
+});

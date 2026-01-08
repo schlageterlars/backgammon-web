@@ -1,6 +1,8 @@
 // useLobbyWebSocket.ts
 import { ref, reactive, onMounted, onBeforeUnmount } from "vue";
 import type { ChatMessage, GameState, LobbyState, UseLobby } from "@/types/lobby-types"
+import { auth } from "@/firebase";
+import { showToast } from "./toast";
 
 export function useLobbyWebSocket(lobbyId: string, username: string | null): UseLobby {
     const ws = ref<WebSocket | null>(null);
@@ -41,12 +43,18 @@ export function useLobbyWebSocket(lobbyId: string, username: string | null): Use
         }   
     }
 
-    const connect = () => {
-        if (!username) return 
+    const connect = async () => {
         if (ws.value) return
 
+        const token = await auth.currentUser?.getIdToken();
+
+        if (!token) {
+            showToast("Authentication required to connect.", "danger");
+            return;
+        }
+
         ws.value = new WebSocket(
-            `ws://localhost:9000/lobby/${lobbyId}/ws?user=${encodeURIComponent(username)}`
+            `ws://localhost:9000/lobby/${lobbyId}/ws?token=${encodeURIComponent(token)}`
         );
 
         ws.value.onopen = () => {

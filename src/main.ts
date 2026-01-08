@@ -20,6 +20,7 @@ import * as directives from 'vuetify/directives'
 // pinia
 import { createPinia } from 'pinia'
 import piniaPersist from 'pinia-plugin-persistedstate'
+import { initAuth } from './firebase'
 
 
 const vuetify = createVuetify({
@@ -35,5 +36,7 @@ app.use(pinia)
 
 app.use(router)
 app.use(vuetify)
+
+await initAuth();
 
 app.mount('#app')

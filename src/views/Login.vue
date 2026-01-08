@@ -1,16 +1,25 @@
 <!-- src/components/Login.vue -->
 <script setup lang="ts">
-import { ref } from "vue";
-import { auth, provider, signInWithPopup, signOut, onAuthStateChanged } from "../firebase";
-import type { User } from "firebase/auth";
+import { computed, ref } from "vue";
+import { auth, provider, signInWithPopup, signOut } from "../firebase";
+import { linkWithPopup,  } from "firebase/auth";
+import { useUserStore } from "@/stores/user";
 
-// Reactive user state
-const user = ref<User | null>(null);
+const userStore = useUserStore();
+
+const username = computed(() => userStore.username);
+const isAnonymous = computed(() => userStore.isAnonymous);
 
 // Login with Google
 const login = async (): Promise<void> => {
   try {
-    await signInWithPopup(auth, provider);
+    const user = auth.currentUser;
+
+    if (user && user.isAnonymous) {
+      await linkWithPopup(user, provider);
+    } else {
+      await signInWithPopup(auth, provider);
+    }
   } catch (err) {
     console.error("Login error:", err);
   }
@@ -24,17 +33,12 @@ const logout = async (): Promise<void> => {
     console.error("Logout error:", err);
   }
 };
-
-// Track Firebase auth state
-onAuthStateChanged(auth, (currentUser: User | null) => {
-  user.value = currentUser;
-});
 </script>
 
 <template>
   <div class="d-flex align-items-center gap-2 bg-light p-2 rounded shadow-sm">
-    <div v-if="user" class="d-flex align-items-center gap-2">
-      <span class="fw-bold" id="user_displayname">Welcome, {{ user.displayName }}</span>
+    <div v-if="!isAnonymous" class="d-flex align-items-center gap-2">
+      <span class="fw-bold" id="user_displayname">Welcome, {{ username }}</span>
       <button class="btn btn-outline-secondary btn-sm" @click="logout">Logout</button>
     </div>
     <div v-else>

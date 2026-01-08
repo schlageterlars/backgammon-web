@@ -1,7 +1,7 @@
 <template>
   <main class="container py-5">
 
-  <div class="position-fixed top-0 end-0 m-3 d-flex flex-column gap-2">
+  <div v-if="online" class="position-fixed top-0 end-0 m-3 d-flex flex-column gap-2">
     <Login />
 
     <div class="d-flex align-items-center gap-2 bg-light p-2 rounded shadow-sm">

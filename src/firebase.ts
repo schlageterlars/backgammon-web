@@ -8,7 +8,8 @@ import {
   signInWithPopup, 
   signOut, 
   onAuthStateChanged, 
-  type User 
+  type User, 
+  signInAnonymously
 } from "firebase/auth";
 import { useUserStore } from "@/stores/user";
 
@@ -33,15 +34,39 @@ const analytics: Analytics = getAnalytics(app);
 const auth: Auth = getAuth(app);
 const provider: GoogleAuthProvider = new GoogleAuthProvider();
 
-onAuthStateChanged(auth, (user: User | null) => {
-  const userStore = useUserStore();
-  if (user) {
-    userStore.setUsername(user.displayName || user.email || "Anonymous");
-  } else {
-    userStore.setUsername("");
-  }
+let authReadyResolve!: () => void;
+const authReady = new Promise<void>((resolve) => {
+  authReadyResolve = resolve;
 });
 
-// Exports
-export { auth, provider, signInWithPopup, signOut, onAuthStateChanged, analytics };  export type { User };
+onAuthStateChanged(auth, async (user: User | null) => {
+  const userStore = useUserStore();
 
+  if (!user) {
+    await signInAnonymously(auth);
+    return;
+  }
+
+  userStore.setUsername(
+    user.displayName || user.email || "Anonymous"
+  );
+  userStore.setAnonymous(user.isAnonymous);
+
+
+  authReadyResolve();
+});
+
+
+export function initAuth(): Promise<void> {
+  return authReady;
+}
+
+export {
+  auth,
+  provider,
+  signInWithPopup,
+  signOut,
+  analytics
+};
+
+export type { User };

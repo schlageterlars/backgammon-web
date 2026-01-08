@@ -197,8 +197,8 @@ export default {
 }
 
 .player-card.active-turn {
-  border: 4px solid gold !important;
-  box-shadow: 0 0 20px 8px rgba(255, 215, 0, 0.8) !important;
+  border: 2px solid gold !important;
+  box-shadow: 0 0 20px 1px rgba(255, 215, 0, 0.8) !important;
   background: rgba(255, 215, 0, 0.15);
   transform: scale(1.05);
 }

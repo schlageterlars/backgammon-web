@@ -6,6 +6,7 @@
     :lobbyId="lobbyId"
     :state="lobbyState"
     @leave="leaveLobby"
+    :currentPlayer="gameState?.currentPlayer"
   />
     <chat-window v-if="lobbyState" :messages="messages" @sendMessage="sendMessage" />
     <div v-if="gameState">
