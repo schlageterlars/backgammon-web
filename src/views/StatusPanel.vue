@@ -23,6 +23,17 @@
           <span v-if="blackPlayer && !blackPlayer.connected" class="text-red-500"> (Disconnected)</span>
         </div>
       </div>
+
+      <div
+        v-if="timeLeftSeconds !== null"
+        class="timer"
+        :class="{
+          'timer-left': isWhiteTurn,
+          'timer-right': isBlackTurn
+        }"
+      >
+        ⏱ {{ timeLeftSeconds }}s
+      </div>
   </div>
 </template>
 
@@ -35,6 +46,10 @@ export default {
   props: {
     lobbyId: { type: String, required: true },
     currentPlayer: {type: String},
+    timeLeftSeconds: {
+      type: Number as () => number | null,
+      default: null
+    },  
     state: {
       type: Object as () => LobbyState | null,
       required: false,
@@ -101,6 +116,14 @@ export default {
 </script>
 
 <style scoped>
+.timer-left {
+  text-align: start;
+}
+
+.timer-right {
+  text-align: end;
+}
+
 .text-red-500 {
   color: #f56565; 
   font-size: 0.85em;

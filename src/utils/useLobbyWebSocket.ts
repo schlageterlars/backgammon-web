@@ -11,6 +11,7 @@ export function useLobbyWebSocket(lobbyId: string, username: string | null): Use
     const connected = ref(false);
     const gameState = ref<GameState | null>(null);
     const lobbyState = ref<LobbyState | null>(null);
+    const timeLeftSeconds = ref<number | null>(null);
 
     const sendMessage = (text: string) => {
         if (ws.value && text.trim() !== "") {
@@ -92,6 +93,10 @@ export function useLobbyWebSocket(lobbyId: string, username: string | null): Use
                 };
             }
 
+            if (type == "TimerTick") {
+                timeLeftSeconds.value = content.seconds;
+            }
+
             // Handle PlayerAssigned
             if (type === "PlayerAssigned") {
                 player.value = content.color;
@@ -130,6 +135,7 @@ export function useLobbyWebSocket(lobbyId: string, username: string | null): Use
     });
 
     return {
+        timeLeftSeconds,
         messages,
         player,
         connected,

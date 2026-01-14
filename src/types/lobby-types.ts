@@ -47,6 +47,7 @@ export interface LobbyState {
 ────────────────────────────── */
 
 export interface UseLobby {
+  timeLeftSeconds: Ref<number | null>
   messages: ChatMessage[]
   player: Ref<string>
   gameState: Ref<GameState | null>

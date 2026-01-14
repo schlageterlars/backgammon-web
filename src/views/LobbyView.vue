@@ -7,6 +7,7 @@
     :state="lobbyState"
     @leave="leaveLobby"
     :currentPlayer="gameState?.currentPlayer"
+    :timeLeftSeconds="timeLeftSeconds"
   />
     <chat-window v-if="lobbyState" :messages="messages" @sendMessage="sendMessage" />
     <div v-if="gameState">
@@ -44,7 +45,7 @@ onMounted(async () => {
 })
 
 // Call composable
-const { messages, player, gameState, lobbyState, connected, sendMessage, sendMove, close } =
+const { timeLeftSeconds, messages, gameState, lobbyState, sendMessage, sendMove, close } =
   useLobby(lobbyId, userStore.username, props.mode);
 
 const router = useRouter()

@@ -7,6 +7,8 @@ export function useLocalLobby(): UseLobby {
   const player = ref<string>("local")
   const lobbyState = ref(null) 
   const messages = reactive([])
+  const timeLeftSeconds = ref<number | null>(null);
+
 
   const gameState: Ref<GameState | null> = ref(null)
 
@@ -40,6 +42,7 @@ export function useLocalLobby(): UseLobby {
   })
 
   return {
+    timeLeftSeconds,
     messages,
     player,
     connected,
