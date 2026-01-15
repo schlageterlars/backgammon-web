@@ -14,12 +14,12 @@
       <div class="players-container" v-if="state">
         <div class="player-card" :class="{ 'active-turn': isWhiteTurn }">
           <div class="color-dot bg-white border border-gray-400"></div>
-          <span class="username">{{ whitePlayer?.name || 'Waiting...' }}</span>
+          <span class="username" @click="goToProfile(whitePlayer?.uid)">{{ whitePlayer?.name || 'Waiting...' }}</span>
           <span v-if="whitePlayer && !whitePlayer.connected" class="text-red-500"> (Disconnected)</span>
         </div>
         <div class="player-card" :class="{ 'active-turn': isBlackTurn }">
           <div class="color-dot bg-black"></div>
-          <span class="username">{{ blackPlayer?.name || 'Waiting...' }}</span>
+          <span class="username" @click="goToProfile(blackPlayer?.uid)">{{ blackPlayer?.name || 'Waiting...' }}</span>
           <span v-if="blackPlayer && !blackPlayer.connected" class="text-red-500"> (Disconnected)</span>
         </div>
       </div>
@@ -37,9 +37,24 @@
   </div>
 </template>
 
+<script setup lang="ts">
+import type { LobbyState } from '@/types/lobby-types'
+import { showToast } from '@/utils/toast'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const goToProfile = (uid?: string) => {
+  if (uid) {
+    router.push(`/profile/${uid}`)
+  } else {
+    console.warn('User UID not available')
+  }
+}
+</script>
+
+
 <script lang="ts">
-import type { LobbyState } from '@/types/lobby-types';
-import { showToast } from '@/utils/toast';
 
 export default {
   components: {},
@@ -241,7 +256,13 @@ export default {
   box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
 }
 .username {
+  cursor: pointer;
   font-weight: 600;
+  transition: all 0.3s ease;
   color: var(--text-color);
+}
+
+.username:hover {
+  transform: scale(1.01);
 }
 </style>

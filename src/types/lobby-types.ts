@@ -32,6 +32,7 @@ export interface GameState {
 ────────────────────────────── */
 
 export interface User {
+  uid: string
   name: string
   connected: boolean
 }
