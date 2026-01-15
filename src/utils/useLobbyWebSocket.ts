@@ -4,6 +4,12 @@ import type { ChatMessage, GameState, LobbyState, UseLobby } from "@/types/lobby
 import { auth } from "@/firebase";
 import { showToast } from "./toast";
 
+const toWsUrl = (httpUrl: string) => {
+    const url = new URL(httpUrl)
+    url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
+    return url
+}
+
 export function useLobbyWebSocket(lobbyId: string, username: string | null): UseLobby {
     const ws = ref<WebSocket | null>(null);
     const messages = reactive<ChatMessage[]>([]);
@@ -39,9 +45,9 @@ export function useLobbyWebSocket(lobbyId: string, username: string | null): Use
     const close = () => {
         console.log(`close ${ws}`)
         if (ws.value) {
-            ws.value.close() 
+            ws.value.close()
             ws.value = null
-        }   
+        }
     }
 
     const connect = async () => {
@@ -55,8 +61,8 @@ export function useLobbyWebSocket(lobbyId: string, username: string | null): Use
         }
 
         ws.value = new WebSocket(
-            `ws://localhost:9000/lobby/${lobbyId}/ws?token=${encodeURIComponent(token)}`
-        );
+            `${toWsUrl(import.meta.env.VITE_API_URL).href}lobby/${lobbyId}/ws?token=${encodeURIComponent(token)}`
+        )
 
         ws.value.onopen = () => {
             connected.value = true;
