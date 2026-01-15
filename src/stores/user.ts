@@ -3,7 +3,8 @@ import { defineStore } from 'pinia'
 export const useUserStore = defineStore("user", {
   state: () => ({
     username: "",
-    isAnonymous: true
+    isAnonymous: true,
+    uid: ""
   }),
   actions: {
     setUsername(name: string) {
@@ -11,6 +12,9 @@ export const useUserStore = defineStore("user", {
     },
     setAnonymous(value: boolean) {
       this.isAnonymous = value;
+    },
+    setUid(value: string) {
+      this.uid = value;
     }
   }
 });

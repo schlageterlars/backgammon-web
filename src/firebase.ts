@@ -41,17 +41,17 @@ const authReady = new Promise<void>((resolve) => {
 
 onAuthStateChanged(auth, async (user: User | null) => {
   const userStore = useUserStore();
+  console.log("login")
 
   if (!user) {
     await signInAnonymously(auth);
     return;
   }
-
+  userStore.setUid(user.uid)
   userStore.setUsername(
     user.displayName || user.email || "Anonymous"
   );
   userStore.setAnonymous(user.isAnonymous);
-
 
   authReadyResolve();
 });

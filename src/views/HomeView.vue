@@ -4,7 +4,7 @@
   <div v-if="online" class="position-fixed top-0 end-0 m-3 d-flex flex-column gap-2">
     <Login />
 
-    <div class="d-flex align-items-center gap-2 bg-light p-2 rounded shadow-sm">
+    <div v-if=false class="d-flex align-items-center gap-2 bg-light p-2 rounded shadow-sm">
       <small class="text-muted text-wrap">
         Play against another player on this device
       </small>
